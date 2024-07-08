@@ -1,0 +1,47 @@
+export default [
+    { 
+        id: 1,
+        location: 'D2 Bar and Lounge', 
+        capacity: 6,
+        participants: 3,
+        participantsLanguageOne: 2,
+        participantsLanguageTwo: 1,
+        languageOne: 'Spanish',
+        languageTwo: 'English',
+        price: null, 
+        time: Date.now(),
+        duration: 30, 
+        organiser: 'Dave W',
+        participantIds: [1, 2, 5]
+    },
+    { 
+        id: 2,
+        location: 'Merrion Square', 
+        capacity: 4 ,
+        participants: 2,
+        participantsLanguageOne: 2,
+        participantsLanguageTwo: 0,
+        languageOne: 'Spanish',
+        languageTwo: 'English',
+        price: '5.50', 
+        time: Date.now(),
+        duration: 60, 
+        organiser: 'Leona L',
+        participantIds: []
+    },
+    { 
+        id: 3,
+        location: 'The Hive Coffee Shop', 
+        capacity: 8,
+        participants: 8,
+        participantsLanguageOne: 4,
+        participantsLanguageTwo: 4,
+        languageOne: 'Spanish',
+        languageTwo: 'English',
+        price: '3.00', 
+        time: Date.now(),
+        duration: 90, 
+        organiser: 'Damien Duff',
+        participantIds: []
+    },
+  ];
