@@ -1,22 +1,27 @@
 import { useState } from 'react'
-import Nav from './components/Nav'
-import './App.css'
+import Nav from '@/components/Nav'
+import '@/App.css'
+// Shell
+import AppShell from "@/routes/AppShell";
 // Public
-import Home from './routes/Home'
-import Login from './routes/Login'
-import SignUp from './routes/SignUp'
-import Profile from './routes/Profile'
-import CreateExchange from './routes/CreateExchange'
+import Home from '@/routes/public/Home'
+import Login from '@/routes/public/Login'
+import SignUp from '@/routes/public/SignUp'
+import About from '@/routes/public/About'
+import Contact from '@/routes/public/Contact'
 // Private / Protected
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { PublicRoute } from "./components/PublicRoute";
-import { AuthProvider } from "./hooks/useAuth";
-import Exchanges from './routes/Exchanges'
-import ExchangeView from './routes/ExchangeView'
-import Settings from './routes/Settings'
+import Profile from '@/routes/Profile'
+import CreateExchange from '@/routes/CreateExchange'
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PublicRoute } from "@/components/PublicRoute";
+import { AuthProvider } from "@/hooks/useAuth";
+import Exchanges from '@/routes/Exchanges'
+import ExchangeView from '@/routes/ExchangeView'
+import Settings from '@/routes/Settings'
 // ADMIN
-import Admin from './routes/admin/Index'
-
+import Admin from '@/routes/admin/Index'
+// Other
+import Footer from '@/routes/Footer'
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
 import '@mantine/core/styles.css';
@@ -38,33 +43,35 @@ function App() {
             <AuthProvider>
               {/* {window.localStorage.user && <Nav></Nav>} */}
               <Routes>
-                <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
-                <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/" element={<PublicRoute><Nav /><AppShell><Home /></AppShell><Footer /></PublicRoute>} />
+                <Route path="/about" element={<PublicRoute><Nav /><AppShell><About /></AppShell><Footer /></PublicRoute>} />
+                <Route path="/contact" element={<PublicRoute><Nav /><AppShell><Contact /></AppShell><Footer /></PublicRoute>} />
+                <Route path="/signup" element={<PublicRoute><Nav /><AppShell><SignUp /></AppShell><Footer /></PublicRoute>} />
+                <Route path="/login" element={<PublicRoute><Nav /><AppShell><Login /></AppShell><Footer /></PublicRoute>} />
                 <Route
                   path="/exchanges"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<Exchanges /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><Exchanges /></ProtectedRoute>}
                 />
                 <Route
                   path="/exchanges/:exchangeId"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<ExchangeView /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><ExchangeView /></ProtectedRoute>}
                 />
                 <Route
                   path="/profile"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<Profile /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><Profile /></ProtectedRoute>}
                 />
                 <Route
                   path="/settings"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<Settings /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><Settings /></ProtectedRoute>}
                 />
                 <Route
                   path="/createexchange"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<CreateExchange /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><CreateExchange /></ProtectedRoute>}
                 />
                 {/* ADMIN */}
                 <Route
                   path="/admin"
-                  element={<ProtectedRoute>{window.localStorage.user && <Nav></Nav>}<Admin /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><Admin /></ProtectedRoute>}
                 />
               </Routes>
             </AuthProvider>

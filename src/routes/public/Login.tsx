@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button, Input, Text, Space } from '@mantine/core';
 import { useState, useEffect } from 'react';
-import useFetch from '../hooks/useFetch';
-import { useAuth } from "../hooks/useAuth";
-import Alert from '../components/Alert';
+import useFetch from '@/hooks/useFetch';
+import { useAuth } from "@/hooks/useAuth";
+import Alert from '@/components/Alert';
 
 export default function Login() {
     const [error, setError] = useState(false)
@@ -34,8 +34,5 @@ export default function Login() {
     <Space h="xl" />
     <Alert text="Username not found" show={error}/>
     <Space h="xl" />
-    <div><span style={{marginRight: '10px'}}>Don't have an account?</span>
-    <Link to="/signup">Sign Up</Link>
-    </div> 
     </div>
 }

@@ -22,15 +22,14 @@ const exchanges = () => {
     let { data: exchanges } = useFetch('exchanges')
 
    useEffect(() => {
-        async function fetchData() {
-           
-            setLoading(false);
-        }
-        fetchData();
-   }, [])
-   exchanges = exchanges.map(exchange => formatExchange(exchange))
-   console.log('exchanges', exchanges);
-   
+    if (exchanges.length > 0 && languages.length > 0) {
+        exchanges = exchanges.map(exchange => formatExchange(exchange, languages))
+    }
+   }, [languages, exchanges])
+
+
+
+    exchanges = exchanges.map(exchange => formatExchange(exchange, languages))
     return (
         <div style={exchangeContStyle}>
             <h2>Today</h2>
@@ -45,10 +44,8 @@ const exchanges = () => {
                     organizer={exchange.organizer} 
                     participants={exchange.participants} 
                     time={exchange.time}
-                    languageOne={exchange.languageOne}
-                    languageTwo={exchange.languageTwo}
-                    participantsLanguageOne={exchange.participantsLanguageOne}
-                    participantsLanguageTwo={exchange.participantsLanguageTwo}
+                    learningLanguage={exchange.learningLanguage}
+                    teachingLanguage={exchange.teachingLanguage}
                     participantIds={exchange.participantIds}
                     users={users}
                     />

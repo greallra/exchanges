@@ -1,7 +1,7 @@
 export function formatPostData (data: object) {
     return {
         ...data,
-        learningLanguage: data.learningLanguage.id,
-        teachingLanguage: data.teachingLanguage.id
+        // languageOne: data.languageOne.id,
+        // languageTwo: data.languageTwo.id
     }
 }

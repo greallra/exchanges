@@ -1,4 +1,4 @@
-import { TextInput, Select } from '@mantine/core';
+import { TextInput, Select, Image } from '@mantine/core';
 import { LanguagePicker } from '../LanguagePicker';
 import { DateTimePicker } from '@mantine/dates';
 
@@ -72,6 +72,21 @@ const FormField = (p: FormFieldProps, outputProps) => {
         <>
             <h4>{p.label}</h4>
             <LanguagePicker selected={p.value} setSelected={handleDirectChange}/>
+        </>
+        }
+        {p.type === 'language_shower' && 
+        <>
+            <h4>{p.label}</h4>
+            <h4>{p.value}</h4>
+            {/* <div className='flex'>
+                <Image
+                    radius="md"
+                    h={'20px'}
+                    src={p.value}
+                />
+                <div>{p.value}</div>
+            </div> */}
+          
         </>
         }
         {p.type === 'datetime_picker' && 

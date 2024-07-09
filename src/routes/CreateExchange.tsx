@@ -30,28 +30,6 @@ export default function CreateExchange (props) {
           console.log(error);
           notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
         }
-  
-      // e.preventDefault();
-      //  const data = {
-      //     name,
-      //     capacity,
-      //     duration,
-      //     languageOne,
-      //     languageTwo,
-      //     participants: 1,
-      //     participantsLanguageOne: 1,
-      //     participantsLanguageTwo: 0,
-      //     time,
-      //     organizer: user.id,
-      //     participantIds: [user.id]
-      //  }
-      //   try {
-      //     const colRef = collection(db, 'exchanges')
-      //     const docRef = await addDoc(colRef, data)
-      //     alert('Document was created with ID:', docRef.id) 
-      //   } catch (error) {
-      //     console.log(error);
-          
     }
       async function handleValidateForm(form) { 
         // yup validation
@@ -77,7 +55,8 @@ export default function CreateExchange (props) {
     return (<div className='flex-col'>
             <h2>Create an Exchange</h2>
               <Form 
-                  fields={exchangeFormFields} 
+                  fields={exchangeFormFields}
+                  user={user} 
                   onSubmit={(e, stateOfChild) => handleSubmit(e, stateOfChild)} 
                   validateForm={handleValidateForm} 
                   error={error} 

@@ -79,17 +79,17 @@ export const exchangeFormFields = [
      availableValues: ['30', '45', '60', '120', '180']
     },
     { 
-    type: "language_picker",
-    name: "languageOne",
-    label: "Enter first language",
-    property: "languageOne",
+    type: "language_shower",
+    name: "teachingLanguage",
+    label: "Your teaching language is",
+    property: "teachingLanguage",
     value: null
     },
     { 
-    type: "language_picker",
-    name: "languageTwo",
-    label: "Enter second language",
-    property: "languageTwo",
+    type: "language_shower",
+    name: "learningLanguage",
+    label: "Your teaching language is",
+    property: "learningLanguage",
     value: null
     },     
 ];

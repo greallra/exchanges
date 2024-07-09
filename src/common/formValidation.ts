@@ -13,6 +13,11 @@ let userSchema = object({
 });
 let exchangeSchema = object({
   name: string().required('Location Name is a required field').min(3),
+  capacity: string().required(),
+  time: date(),
+  duration: string(),
+  teachingLanguage: string().required('teachingLanguage a required field').min(20),
+  learningLanguage: string().required('learningLanguage a required field').min(20),
 });
 
 // parse and assert validity
@@ -32,9 +37,9 @@ export async function validateForm(form: string, formData: object){
             // parse and assert validity
             const exchange = await exchangeSchema.validate(formData)
             // custom validation
-            if (_.isEqual(exchange.teachingLanguage, exchange.learningLanguage)) {
-              return 'Teaching Language and Learning Language cannot be the same';
-            }
+            // if (_.isEqual(exchange.languageOne, exchange.languageTwo)) {
+            //   return 'Teaching Language and Learning Language cannot be the same';
+            // }
             return exchange
         } catch (error) {
             return error.message

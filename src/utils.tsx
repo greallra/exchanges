@@ -1,20 +1,21 @@
 import { format, formatDistance, formatRelative, subDays, formatISO } from 'date-fns'
-
+import _ from 'lodash'
 export function isFirebaseId (str: string) {
     return typeof str === 'string' && str.length === 20;
 }
 export function formatExchange (exchange: object, languages: Array) {
-    console.log('exchange: object, languages: Array', exchange, languages);
-    
     if (typeof exchange.time === 'object') {
         exchange.time = format(formatISO(exchange.time.seconds * 1000), 'Pp')
     }
-    if (isFirebaseId(exchange.languageOne)) {
-        exchange.languageOne = languages.find( lang => lang.id = exchange.languageOne) ? languages.find( lang => lang.id === exchange.languageOne): {}
+
+    if (isFirebaseId(exchange.teachingLanguage)) {
+        const findLanguageObject = languages.find( lang => lang.id === exchange.teachingLanguage);
+        findLanguageObject ? exchange.teachingLanguage = findLanguageObject : null
     }
-    if(isFirebaseId(exchange.languageTwo)){
-        exchange.languageTwo = languages.find( lang => lang.id === exchange.languageTwo) ? languages.find( lang => lang.id === exchange.languageTwo): {}
-    } 
+    if (isFirebaseId(exchange.learningLanguage)) {
+        const findLanguageObject = languages.find( lang => lang.id === exchange.learningLanguage);
+        findLanguageObject ? exchange.learningLanguage = findLanguageObject : null
+    }
     return {
         ...exchange
     }

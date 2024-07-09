@@ -13,32 +13,27 @@ interface ExchangeItemProps {
     organizer: string,
     time: string,
     participants: string,
-    languageOne: string,
-    languageTwo: string,
+    teachingLanguage: object,
+    learningLanguage: object,
     smallFlag: string,
     users: Array
 }
 
 const ExchangeItem = (props: ExchangeItemProps) => {
     const [allParticipants, setAllParticipants] = useState([])
-    const [l1Participants, setl1Participants] = useState([])
-    const [l2Participants, setl2Participants] = useState([])
+    const [participantsTeachingLanguage, setParticipantsTeachingLanguage] = useState([])
+    const [participantsLearningLanguage, setParticipantsLearningLanguage] = useState([])
 
     useEffect(() => {
         if (props.participantIds.length > 0 && props.users.length) {
             const allParticipants = props.users.filter( user => props.participantIds.includes(user.id));
-            console.log('props.users', props.users);
-            console.log('props.participantIds', props.participantIds);
-            console.log('allParticipants', allParticipants);
-            
             setAllParticipants(allParticipants)
-  
         }
       }, [props.participantIds]);
     useEffect(() => {
         console.log('useEffect allParticipants',allParticipants);
-        setl1Participants(allParticipants.filter( p => p.teachingLanguage === props.languageOne.id))
-        setl2Participants(allParticipants.filter( p => p.teachingLanguage === props.languageTwo.id))
+        setParticipantsTeachingLanguage(allParticipants.filter( p => p.teachingLanguage === props.teachingLanguage.id))
+        setParticipantsLearningLanguage(allParticipants.filter( p => p.teachingLanguage === props.learningLanguage.id))
       }, [allParticipants]);
       
     
@@ -65,26 +60,26 @@ const ExchangeItem = (props: ExchangeItemProps) => {
             <div style={{ display: 'flex', justifyContent: 'space-between'}}>
                 <div style={{ display: 'flex', alignItems: 'center'}}> 
                     <Image
-                    src={images[props.languageOne.name && props.languageOne.name.toLowerCase()]}
+                    src={images[props.teachingLanguage.name && props.teachingLanguage.name.toLowerCase()]}
                     h={20}
                     w="auto"
                     alt="Norway"/>
-                    <div style={{ marginLeft: '5px'}} className='mr-1'>{props.languageOne.name} speakers </div>
-                    <Text size="sm" c="dimmed">{props.participantsLanguageOne} / {props.capacity / 2}</Text>  
+                    <div style={{ marginLeft: '5px'}} className='mr-1'>{props.teachingLanguage.name} speakers </div>
+                    <Text size="sm" c="dimmed">{participantsTeachingLanguage.length} / {props.capacity / 2}</Text>  
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center'}}> 
                     <Image
-                    src={images[props.languageTwo.name && props.languageTwo.name.toLowerCase()]}
+                    src={images[props.learningLanguage.name && props.learningLanguage.name.toLowerCase()]}
                     h={20}
                     w="auto"
                     alt="Norway"/>
-                    <div style={{ marginLeft: '5px'}} className='mr-1'>{props.languageTwo.name} speakers </div>
-                    <Text size="sm" c="dimmed">{props.participantsLanguageTwo} / {props.capacity / 2}</Text>     
+                    <div style={{ marginLeft: '5px'}} className='mr-1'>{props.learningLanguage.name} speakers </div>
+                    <Text size="sm" c="dimmed">{participantsLearningLanguage.length} / {props.capacity / 2}</Text>     
                 </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-                <AvatarGroup users={l1Participants} spacesAvailable={(props.capacity / 2) - l1Participants.length} />  
-                <AvatarGroup users={l2Participants} spacesAvailable={(props.capacity / 2) - l2Participants.length} />  
+                <AvatarGroup users={participantsTeachingLanguage} spacesAvailable={(props.capacity / 2) - participantsTeachingLanguage.length} />  
+                <AvatarGroup users={participantsLearningLanguage} spacesAvailable={(props.capacity / 2) - participantsLearningLanguage.length} />  
             </div>
     
             <Button color="blue" fullWidth mt="md" radius="md">

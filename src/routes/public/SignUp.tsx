@@ -3,8 +3,8 @@ import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-import { userFormFields } from '../common/forms'
-import { db } from "../firebaseConfig";
+import { userFormFields } from '../../common/forms'
+import { db } from "../../firebaseConfig";
 import {
     collection,
     getDocs,
@@ -13,8 +13,8 @@ import {
     deleteDoc,
     doc,
   } from "firebase/firestore";
-import { validateForm } from '../common/formValidation'
-import Form from '../components/Forms/Form'
+import { validateForm } from '../../common/formValidation'
+import Form from '../../components/Forms/Form'
 import _ from 'lodash';
 
 
@@ -84,9 +84,7 @@ const SignUp = ():React.JSX.Element => {
             error={error} 
             formValid={formValid}
         />
-        <Space h="xl" />
-        <Space h="xl" />
-        <Text fz="md" lh="md"><Link to="/login">Already have an account? Log in</Link></Text>
+
     </div>
 }
 export default SignUp;

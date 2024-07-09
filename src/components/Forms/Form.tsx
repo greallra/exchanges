@@ -9,6 +9,7 @@ interface FormProps {
     validateForm: <T>(data: T) => void,
     error: string,
     formValid: boolean,
+    user: object
 }
 
 const Form = (p: FormProps) => {
@@ -16,12 +17,18 @@ const Form = (p: FormProps) => {
     const getInitialState = () => {
         let initialState = {};
         p.fields.forEach((field) => {
-            if (field.property === 'teachingLanguage' || field.property === 'learningLanguage') {
+            if (field.type === 'language_picker' && (field.property === 'teachingLanguage' || field.property === 'learningLanguage')) {
                 initialState[field.property] = {}
                 initialState[field.property].smallFlag =  "/src/assets/images/spanish.png"
                 initialState[field.property].name =  "Spanish"
                 initialState[field.property].label =  "Spanish"
                 initialState[field.property].id =  "2DPZDFazWCvRWlUB5FqP"
+
+            } else if (field.type === 'language_shower' && field.property === 'learningLanguage') {
+                initialState[field.property] = p.user.learningLanguage
+
+            } else if (field.type === 'language_shower' && field.property === 'teachingLanguage') {
+                initialState[field.property] = p.user.teachingLanguage
 
             } else {
                 initialState[field.property] = field.value
