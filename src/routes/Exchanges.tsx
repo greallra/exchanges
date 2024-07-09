@@ -1,18 +1,9 @@
-import exchangesImport from '../mockData/exchanges';
 import ExchangeItem from '../components/ExchangeItem'
 import { Loader } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { isFirebaseId, formatExchange } from '../utils'
-import { db } from "../firebaseConfig";
-import {
-    collection,
-    getDocs,
-    getDoc,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-  } from "firebase/firestore";
+import useFetch from '../hooks/useFetch';
+import useLanguages from '../hooks/useLanguages';
 
 const exchangeContStyle = {
     width: '600px',
@@ -24,41 +15,22 @@ const exchangeContStyle = {
 
 const exchanges = () => {
     const [loading, setLoading] = useState(true)
-    const [exchanges, setExchanges] = useState([])
-    const [users, setUsers] = useState([])
-    const [languages, setLanguages] = useState([])
+    // const [exchanges, setExchanges] = useState([])
+    // const [users, setUsers] = useState([])
+    const { languages } = useLanguages();
+    const { data: users } = useFetch('users')
+    let { data: exchanges } = useFetch('exchanges')
 
    useEffect(() => {
         async function fetchData() {
-            const collectionRefLanguages = collection(db, 'languages')
-            const collectionRefExchanges = collection(db, 'exchanges')
-            const collectionRefUsers = collection(db, 'users')
-            let users = []
-            let exchanges = []
-            let languages = []
-            const snapshotsLanguages = await getDocs(collectionRefLanguages)
-            snapshotsLanguages.docs.forEach((doc) => {
-                let data = {id: doc.id, ...doc.data()}
-                languages.push(data)
-                setLanguages(languages);
-            })
-            const snapshotsUsers = await getDocs(collectionRefUsers)
-            snapshotsUsers.docs.forEach((doc) => {
-                let data = {id: doc.id, ...doc.data()}
-                users.push(data)
-                setUsers(users);
-            })
-            const snapshotsExchanges = await getDocs(collectionRefExchanges)
-            snapshotsExchanges.docs.forEach((doc) => {
-                let data = {id: doc.id, ...doc.data()}
-                const formattedExchange = formatExchange(data, languages)
-                exchanges.push(formattedExchange)
-                setExchanges(exchanges);
-            })
+           
             setLoading(false);
         }
         fetchData();
    }, [])
+   exchanges = exchanges.map(exchange => formatExchange(exchange))
+   console.log('exchanges', exchanges);
+   
     return (
         <div style={exchangeContStyle}>
             <h2>Today</h2>

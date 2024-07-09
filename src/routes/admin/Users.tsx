@@ -1,10 +1,10 @@
 import { Table } from '@mantine/core';
-import useFetch from '../hooks/useFetch';
+import useFetch from '../../hooks/useFetch';
 import { Link } from "react-router-dom";
 
 export default function Home() {
-    const { users } = useFetch()
-
+    const { data: users } = useFetch('users')
+    // make thise resuable for other data
     return (<>
     <h1>Users List</h1>
     <Table>
@@ -12,6 +12,7 @@ export default function Home() {
         <Table.Tr>
           <Table.Th>First Name</Table.Th>
           <Table.Th>Last Name</Table.Th>
+          <Table.Th>Username</Table.Th>
           <Table.Th>Teaching Language</Table.Th>
           <Table.Th>Learning Language</Table.Th>
         </Table.Tr>
@@ -20,6 +21,7 @@ export default function Home() {
         <Table.Tr key={i}>
             <Table.Td>{user.firstname}</Table.Td>
             <Table.Td>{user.lastname}</Table.Td>
+            <Table.Td>{user.username}</Table.Td>
             <Table.Td>{user.teachingLanguage}</Table.Td>
             <Table.Td>{user.learningLanguage}</Table.Td>
         </Table.Tr>

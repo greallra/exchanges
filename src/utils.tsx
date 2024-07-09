@@ -4,6 +4,8 @@ export function isFirebaseId (str: string) {
     return typeof str === 'string' && str.length === 20;
 }
 export function formatExchange (exchange: object, languages: Array) {
+    console.log('exchange: object, languages: Array', exchange, languages);
+    
     if (typeof exchange.time === 'object') {
         exchange.time = format(formatISO(exchange.time.seconds * 1000), 'Pp')
     }
@@ -16,4 +18,12 @@ export function formatExchange (exchange: object, languages: Array) {
     return {
         ...exchange
     }
+}
+export function formatLanguages (languages: Array) {
+    return languages.map((lang) => {
+        return {
+            ...lang,
+            label: lang.name
+        }
+    })
 }
