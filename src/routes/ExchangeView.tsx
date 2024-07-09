@@ -4,36 +4,22 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from "../hooks/useAuth";
 import { IconUsers } from '@tabler/icons-react';
-
-// import { Avatar } from '@mantine/core';
-// import exchangesImport from '../mockData/exchanges';
-// import usersImport from '../mockData/users';
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '../components/AvatarItem'
 import { formatExchange } from '../utils'
-import { db } from "../firebaseConfig";
-import {
-    collection,
-    getDocs,
-    getDoc,
-    setDoc,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-  } from "firebase/firestore";
+import { getOneDoc, updateDoc } from '@/common/apiCalls'
+import useFetch from '@/hooks/useFetch';
+import useLanguages from '@/hooks/useLanguages';
 
 export default function ExchangeView () {
     const [exchange, setExchange] = React.useState(null);
-    const [languages, setLanguages] = React.useState([]);
-    const [users, setUsers] = React.useState([]);
-    const [participantsLanguageOne, setParticipantsLanguageOne] = React.useState([]);
-    const [participantsLanguageTwo, setParticipantsLanguageTwo] = React.useState([]);
-    const [columnIdJoin, setColumnIdJoin] = React.useState('');
+    const { languages } = useLanguages();
+    const { data: users } = useFetch('users')
+    const [participantsTeachingLanguage, setParticipantsTeachingLanguage] = React.useState([])
+    const [participantsLearningLanguage, setParticipantsLearningLanguage] = React.useState([])
     const {user: me} = useAuth()
 
     let params = useParams();
-
 
     let amValidToJoin = false;
     let haveJoined = false;
@@ -41,10 +27,10 @@ export default function ExchangeView () {
       haveJoined = exchange.participantIds.includes(me.id);
     }
 
-    if (exchange && exchange.languageOne && exchange && exchange.languageTwo) {
-      const languageOneValues = Object.values(exchange.languageOne);
-      const languageTwoValues = Object.values(exchange.languageTwo);
-      const combinedValues = [...languageOneValues, ...languageTwoValues];
+    if (exchange && exchange.learningLanguage && exchange && exchange.teachingLanguage) {
+      const learningLanguageValues = Object.values(exchange.learningLanguage);
+      const teachingLanguageValues = Object.values(exchange.teachingLanguage);
+      const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
 
       // if i havent already joined
       // if they are both my target languages
@@ -58,106 +44,71 @@ export default function ExchangeView () {
     async function handleJoin() {
       const meTeachingLanguage = me.teachingLanguage;
       // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
-      const teachingLanguageCount = [...participantsLanguageOne, ...participantsLanguageTwo].filter( item => item.teachingLanguage === meTeachingLanguage).length;
+      const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
       if (teachingLanguageCount >= exchange.capacity / 2) {
-        notifications.show({
-          color: 'red',
-          title: 'Error',
-          message: 'The Exchange is full',
-        })
+        notifications.show({ color: 'red', title: 'Error', message: 'The Exchange is full', })
         return;
       }
-      const exchangeRef = doc(db, 'exchanges', exchange.id);
-      let participantsMeAdded = [...exchange.participantIds, me.id]
-      await setDoc(exchangeRef, {...exchange, participantIds: participantsMeAdded});
-      await fetchData(params.exchangeId)
-      notifications.show({
-        color: 'green',
-        title: 'Success',
-        message: 'You Have Joined the exchaged',
-      })
+      try {
+        let participantsMeAdded = [...exchange.participantIds, me.id]
+        await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeAdded });
+        await fetchData(params.exchangeId)
+        notifications.show({ color: 'green', title: 'Success', message: 'You Have Joined the exchaged', })
+      } catch (error) {
+        notifications.show({ color: 'red', title: 'Error', message: 'Error joining the Exchange', })
+      }
     }
 
     async function handleRemoveMyself() {
       try {
-        const exchangeRef = doc(db, 'exchanges', exchange.id);
         let participantsMeRemoved = [...exchange.participantIds]
         participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-        console.log('participantsMeRemoved', participantsMeRemoved);
-        
-        await setDoc(exchangeRef, {...exchange, participantIds: participantsMeRemoved});
+        await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeRemoved});
         await fetchData(params.exchangeId)
-        notifications.show({
-          color: 'green',
-          title: 'Success',
-          message: 'You Have been removed from the Exchange',
-        })
-       
-        
+        notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
       } catch (error) {
-        console.log(error);
-        notifications.show({
-          color: 'red',
-          title: 'Error',
-          message: 'Error removing from the Exchange',
-        })
+        notifications.show({ color: 'red', title: 'Error', message: 'Error removing from the Exchange', })
       }
-
     }
 
     async function fetchData(id:string) {  
-      // languages
-      const collectionRefLanguages = collection(db, 'languages')
-      let languages = []
-      let users = []
-      const snapshotsLanguages = await getDocs(collectionRefLanguages)
-      snapshotsLanguages.docs.forEach((doc) => {
-          let data = {id: doc.id, ...doc.data()}
-          languages.push(data)
-          setLanguages(languages);
-      })
-      // users
-      const collectionRefUsers = collection(db, 'users')
-      const snapshotsUsers = await getDocs(collectionRefUsers)
-      snapshotsUsers.docs.forEach((doc) => {
-          let data = {id: doc.id, ...doc.data()}
-          users.push(data)
-          setUsers(users);
-      })
-      // exchange
-      const docRef = doc(db, "exchanges", id);
-      const docSnap = await getDoc(docRef);
-      const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages)
-      setExchange(formattedExchange);
+      try {
+        const {docSnap} = await getOneDoc("exchanges", id);
+        const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages)
+
+        setExchange(formattedExchange)
+      } catch (error) {
+        notifications.show({ color: 'red', title: 'Error', message: 'Error gettting exchange', })
+      }
     }
 
     React.useEffect(() => {
-     fetchData(params.exchangeId)
-    }, []); // <-- Have to pass in [] here!
+      if (languages.length > 0) {
+        fetchData(params.exchangeId)
+      }
+    }, [languages]); 
 
     React.useEffect(() => {
       if (exchange && users.length > 0) {
-        const participantsLanguageOne = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguage === exchange.languageOne.id)
-        const participantsLanguageTwo = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguage === exchange.languageOne.id)
-        setParticipantsLanguageOne(participantsLanguageOne);
-        setParticipantsLanguageTwo(participantsLanguageTwo);
+        const participantsTeachingLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguage === exchange.teachingLanguage.id)
+        const participantsLearningLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguage === exchange.teachingLanguage.id)
+        setParticipantsTeachingLanguage(participantsTeachingLanguage);
+        setParticipantsLearningLanguage(participantsLearningLanguage);
       }
 
     }, [exchange, users])
 
-      const participantsList = (participants, teachingLanguage) => {
-        const divContainer = [];
-        for (let i = 0; i < exchange.capacity / 2; i++) {
-          divContainer.push(<AvatarItem 
-            user={participants[i]} 
-            exchange={exchange} 
-            amValidToJoin={amValidToJoin}
-            participantsLanguageOne={participantsLanguageOne} 
-            participantsLanguageTwo={participantsLanguageTwo} 
-            teachingLanguage={teachingLanguage} />)
-        }
-        return <div>{divContainer}</div>;
+    const participantsList = (participants, teachingLanguage) => {
+      const divContainer = [];
+      for (let i = 0; i < exchange.capacity / 2; i++) {
+        divContainer.push(<AvatarItem 
+          user={participants[i]} 
+          exchange={exchange} 
+          amValidToJoin={amValidToJoin}
+          teachingLanguage={teachingLanguage} />)
       }
+      return <div>{divContainer}</div>;
+    }
 
    
 
@@ -200,15 +151,15 @@ export default function ExchangeView () {
     <div className='participants-container'>
         <div className='flex'>
             <div style={{padding: '30px'}}>
-                <Text fw={500}>{ exchange.languageOne.name }: {exchange.participantsLanguageOne} / {exchange.capacity / 2} participants</Text>
+                <Text fw={500}>{ exchange.teachingLanguage.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2} participants</Text>
                 <div className='flex-col' style={{paddingTop: '20px'}}>
-                  {participantsList(participantsLanguageOne, exchange.languageOne.id)}
+                  {participantsList(participantsTeachingLanguage, exchange.teachingLanguage.id)}
                 </div>
             </div>
             <div style={{padding: '30px'}}>
-                <Text fw={500}>{ exchange.languageTwo.name }: {exchange.participantsLanguageTwo} / {exchange.capacity / 2} participants</Text>
+                <Text fw={500}>{ exchange.learningLanguage.name }: {participantsLearningLanguage.length} / {exchange.capacity / 2} participants</Text>
                 <div className='flex-col' style={{paddingTop: '20px'}}>
-                    {participantsList(participantsLanguageTwo, exchange.languageOne.id)}
+                    {participantsList(participantsLearningLanguage, exchange.learningLanguage.id)}
                 </div>
             </div>
         </div>            

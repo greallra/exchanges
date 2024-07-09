@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import { IconChevronDown, IconClock  } from '@tabler/icons-react';
-import { format, formatDistance, formatRelative, subDays, formatISO } from 'date-fns'
 import AvatarGroup from '../components/AvatarGroup'
-import users from '../mockData/users'
 import {Link} from 'react-router-dom';
 import images from '../assets/images';
 

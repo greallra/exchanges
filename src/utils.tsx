@@ -7,7 +7,6 @@ export function formatExchange (exchange: object, languages: Array) {
     if (typeof exchange.time === 'object') {
         exchange.time = format(formatISO(exchange.time.seconds * 1000), 'Pp')
     }
-
     if (isFirebaseId(exchange.teachingLanguage)) {
         const findLanguageObject = languages.find( lang => lang.id === exchange.teachingLanguage);
         findLanguageObject ? exchange.teachingLanguage = findLanguageObject : null

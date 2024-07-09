@@ -2,7 +2,9 @@ import { db } from "../firebaseConfig";
 import {
     collection,
     getDocs,
+    getDoc,
     addDoc,
+    setDoc,
     updateDoc,
     deleteDoc,
     doc,
@@ -18,6 +20,44 @@ export async function postDoc (collectionName: string, data){
                 docRef
             });
       
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+}
+
+export async function getOneDoc (collectionName: string, docId: string){
+    return new Promise(async (resolve, reject) => {
+        try {
+            const docRef = doc(db, collectionName, docId);
+            const docSnap = await getDoc(docRef);
+            resolve({
+              error: false,
+              docSnap
+          });
+          
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+}
+
+export async function updateDoc (collectionName: string, docId: string, data: object){
+    return new Promise(async (resolve, reject) => {
+        try {
+          const ref = doc(db, collectionName, docId);
+          const response = await setDoc(ref, data);
+          resolve({
+              error: false,
+              response
+          });
+          
           } catch (error) {
             reject({
                 error: true,

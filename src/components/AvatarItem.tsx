@@ -12,13 +12,6 @@ interface propsAvatarItem {
 export default function AvatarItem({ user, exchange, teachingLanguage, amValidToJoin } : propsAvatarItem ) {
     const {user: me} = useAuth()
     const [activeHoverId, setActiveHoverId] = useState('')
-    console.log('me', me);
-  
-
-    // useEffect(() => {
-    //     console.log('exchange.languageOne.id', exchange.languageOne.id);
-        
-    // }, [exchange.languageOne.id])
     
     // this is just for the hover state
     function handleMouseEnter(id:string) {

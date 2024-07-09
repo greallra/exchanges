@@ -1,22 +1,17 @@
-import ExchangeItem from '../components/ExchangeItem'
+import ExchangeItem from '@/components/ExchangeItem'
 import { Loader } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { isFirebaseId, formatExchange } from '../utils'
-import useFetch from '../hooks/useFetch';
-import useLanguages from '../hooks/useLanguages';
+import { isFirebaseId, formatExchange } from '@/utils'
+import useFetch from '@/hooks/useFetch';
+import useLanguages from '@/hooks/useLanguages';
 
 const exchangeContStyle = {
     width: '600px',
     margin: 'auto'
 }
 
-
-
-
 const exchanges = () => {
     const [loading, setLoading] = useState(true)
-    // const [exchanges, setExchanges] = useState([])
-    // const [users, setUsers] = useState([])
     const { languages } = useLanguages();
     const { data: users } = useFetch('users')
     let { data: exchanges } = useFetch('exchanges')
@@ -24,6 +19,7 @@ const exchanges = () => {
    useEffect(() => {
     if (exchanges.length > 0 && languages.length > 0) {
         exchanges = exchanges.map(exchange => formatExchange(exchange, languages))
+        setLoading(false)
     }
    }, [languages, exchanges])
 
