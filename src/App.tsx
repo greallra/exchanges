@@ -42,7 +42,7 @@ function App() {
          {/* <FirebaseProvider> */}
           <Notifications position="top-right"/>
          
-          <BrowserRouter basename='/exchanges/'>
+          <BrowserRouter>
             <AuthProvider>
               {/* {window.localStorage.user && <Nav></Nav>} */}
               <Routes>
