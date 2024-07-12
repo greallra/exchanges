@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Image, Avatar, Tooltip } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
-import { getUserInitials } from '@/utils'
+import { getUserInitials, getImage } from '@/utils'
 
 const container = {
     display: 'flex',
@@ -17,7 +17,7 @@ export default function () {
              <Image
                 radius="md"
                 h={'100%'}
-                src="/src/assets/logo.png"
+                src={getImage('/assets/logo.png')}
             />
             </div>
             {user && <Button.Group>
