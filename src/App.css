@@ -6,6 +6,7 @@
 
 */
 }
+.pointer {cursor: pointer;}
 
 .logo {
   height: 6em;
@@ -63,6 +64,11 @@
   display: flex;
   justify-content: center;
 }
+.flex-al {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
 .flex-ac {
   display: flex;
   justify-content: center;
@@ -84,4 +90,27 @@
 }
 .mr-1 {
   margin-right: 5px;
+}
+.mt-1 {
+  margin-top: 5px !important;
+}
+.mb-1 {
+  margin-bottom: 5px;
+}
+.content-wrapper {
+  width: 800px;
+  margin: auto;
+}
+.filter-switch {
+  margin-top: 10px;
+  position: absolute !important;
+  right: 20px;
+}
+.full {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.attending {
+  box-shadow: 0 3px 10px green !important;
 }

@@ -1,5 +1,6 @@
-import { useAuth } from "../../hooks/useAuth";
-import Users from './Users'
+import { useAuth } from "@/hooks/useAuth";
+// import Users from './Users'
+import Table from "@/components/Admin/Table"
 
 
 export default function index() {
@@ -8,7 +9,8 @@ export default function index() {
   return (
     <>
     make this reuseable
-    <Users />
+    <Table />
+    {/* <Users /> */}
     </>
   );
 }

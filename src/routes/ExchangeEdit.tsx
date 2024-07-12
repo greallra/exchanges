@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 import { exchangeFormFields } from '../common/formsFields'
-import { formatPostData, updateFormFieldsWithDefaultData } from '../common/formHelpers'
-import { postDoc } from '../common/apiCalls'
+import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '../common/formHelpers'
+import { updateDoc, getOneDoc } from '../common/apiCalls'
 import { validateForm } from '../common/formValidation'
 import { useAuth } from "../hooks/useAuth";
 import Form from '../components/Forms/Form'
 
-export default function CreateExchange (props) {
+export default function ExchangeEdit (props) {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
@@ -18,6 +18,7 @@ export default function CreateExchange (props) {
   const [fields, setFields] = useState(exchangeFormFields)
   const { user } = useAuth()
   const { languages } = useLanguages();
+  let params = useParams();
     
   async function handleSubmit(e:any, stateOfChild: object) {
     e.preventDefault()
@@ -25,13 +26,13 @@ export default function CreateExchange (props) {
     console.log(data);
     try {
         // to do externalise all api calls to FB
-        const colRef = await postDoc('exchanges', data)
+        const colRef = await updateDoc('exchanges', params.exchangeId, data)
         console.log('colRef', colRef);
-        notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', })
+        notifications.show({ color: 'green', title: 'Success', message: 'Exchange updated', })
         navigate('/exchanges')
       } catch (error) {
         console.log(error);
-        notifications.show({ color: 'red', title: 'Error', message: 'Error creating Exchange', })
+        notifications.show({ color: 'red', title: 'Error', message: 'Error updating Exchange', })
       }
   }
     async function handleValidateForm(form) { 
@@ -52,20 +53,31 @@ export default function CreateExchange (props) {
 
     useEffect(() => {
       if (languages.length > 0) {
-          // not really default data, its based on user data, maaybe change in future
-          const defaultData = {
-              teachingLanguage: languages.find( lang => lang.id === user.teachingLanguageId),
-              learningLanguage: languages.find( lang => lang.id === user.learningLanguageId),
-          }
-          const updatedFields = updateFormFieldsWithDefaultData(fields, defaultData)
-          setFields(updatedFields);
-          setBusy(false)
+          // saved data
+          getOneDoc("exchanges", params.exchangeId)
+          .then(({docSnap}) => {
+            console.log(docSnap);
+            const mergeData = {...docSnap.data(), id: docSnap.id}
+            delete mergeData.time
+            const dataUpdatedWithSaved = updateFormFieldsWithSavedData(fields, mergeData)
+            console.log('dataUpdatedWithSaved', dataUpdatedWithSaved);
+            // not really default data, its based on user data, maaybe change in future
+            const defaultData = {
+                teachingLanguage: languages.find( lang => lang.id === user.teachingLanguageId),
+                learningLanguage: languages.find( lang => lang.id === user.learningLanguageId),
+            }
+   
+            const updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
+            setFields(updatedFields);
+            setBusy(false)
+          })
+          .catch((err) => notifications.show({ color: 'red', title: 'Error', message: err.message }))
       }
       
     }, [languages])
 
     return (<div className='flex-col'>
-            <h2>Create an Exchange</h2>
+            <h2>Edit an Exchange</h2>
               {!busy && <Form 
                   fields={fields}
                   user={user} 

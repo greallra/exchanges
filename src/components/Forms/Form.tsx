@@ -17,22 +17,7 @@ const Form = (p: FormProps) => {
     const getInitialState = () => {
         let initialState = {};
         p.fields.forEach((field) => {
-            if (field.type === 'language_picker' && (field.property === 'teachingLanguage' || field.property === 'learningLanguage')) {
-                initialState[field.property] = {}
-                initialState[field.property].smallFlag =  "/src/assets/images/spanish.png"
-                initialState[field.property].name =  "Spanish"
-                initialState[field.property].label =  "Spanish"
-                initialState[field.property].id =  "2DPZDFazWCvRWlUB5FqP"
-
-            } else if (field.type === 'language_shower' && field.property === 'learningLanguage') {
-                initialState[field.property] = p.user.learningLanguage
-
-            } else if (field.type === 'language_shower' && field.property === 'teachingLanguage') {
-                initialState[field.property] = p.user.teachingLanguage
-
-            } else {
-                initialState[field.property] = field.value
-            }
+            initialState[field.property] = field.value
         })
         return initialState
     }
@@ -44,7 +29,7 @@ const Form = (p: FormProps) => {
         })
         
     }
-    return <form onSubmit={(e) => { e.preventDefault(); p.onSubmit(e, state); }} style={{width: '300px'}}>
+    return <form onSubmit={(e) => { e.preventDefault(); p.onSubmit(e, state); }} style={{width: '300px', margin: 'auto'}}>
         {p.fields.map((field, i) => {
             return <FormField 
                 key={i} 

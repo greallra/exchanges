@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Image } from '@mantine/core';
+import { Button, Image, Avatar, Tooltip } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
+import { getUserInitials } from '@/utils'
 
 const container = {
     display: 'flex',
@@ -22,7 +23,12 @@ export default function () {
             {user && <Button.Group>
                 <Button onClick={() => navigate('/exchanges')} variant={ useLocation().pathname === '/exchanges' ? "filled" : "default"}>Exchanges</Button>
                 <Button onClick={() => navigate('/createexchange')} variant={ useLocation().pathname === '/createexchange' ? "filled" : "default"}>Create an Exchange</Button>
-                <Button onClick={() => navigate('/profile')} variant={ useLocation().pathname === '/profile' ? "filled" : "default"}>Profile</Button>
+                <Button onClick={() => navigate('/profile')} variant={ useLocation().pathname === '/profile' ? "filled" : "default"}>
+                     <Tooltip label={user.firstname + ' ' + user.lastname} withArrow>
+                        <Avatar color="cyan" radius="xl" size={30}>{getUserInitials(user)}</Avatar>
+                    </Tooltip>
+                    Profile
+                </Button>
                 <Button onClick={() => navigate('/settings')} variant={ useLocation().pathname === '/settings' ? "filled" : "default"}>Settings</Button>
             </Button.Group>}
             {!user && <Button.Group>

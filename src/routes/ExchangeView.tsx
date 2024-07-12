@@ -1,9 +1,9 @@
 
 import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useAuth } from "../hooks/useAuth";
-import { IconUsers } from '@tabler/icons-react';
+import { IconUsers, IconArrowLeft } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '../components/AvatarItem'
 import { formatExchange } from '../utils'
@@ -27,22 +27,22 @@ export default function ExchangeView () {
       haveJoined = exchange.participantIds.includes(me.id);
     }
 
-    if (exchange && exchange.learningLanguage && exchange && exchange.teachingLanguage) {
-      const learningLanguageValues = Object.values(exchange.learningLanguage);
-      const teachingLanguageValues = Object.values(exchange.teachingLanguage);
+    if (exchange && exchange.learningLanguageId && exchange && exchange.teachingLanguageId) {
+      const learningLanguageValues = Object.values(exchange.learningLanguageUnfolded);
+      const teachingLanguageValues = Object.values(exchange.teachingLanguageUnfolded);
       const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
 
       // if i havent already joined
       // if they are both my target languages
       if (
           !exchange.participantIds.includes(me.id) &&
-          combinedValues.includes(me.learningLanguage) && combinedValues.includes(me.teachingLanguage)) {
+          combinedValues.includes(me.learningLanguageId) && combinedValues.includes(me.teachingLanguageId)) {
           amValidToJoin = true;
       }
     }
 
     async function handleJoin() {
-      const meTeachingLanguage = me.teachingLanguage;
+      const meTeachingLanguage = me.teachingLanguageId;
       // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
       const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
       if (teachingLanguageCount >= exchange.capacity / 2) {
@@ -90,8 +90,8 @@ export default function ExchangeView () {
 
     React.useEffect(() => {
       if (exchange && users.length > 0) {
-        const participantsTeachingLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguage === exchange.teachingLanguage.id)
-        const participantsLearningLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguage === exchange.teachingLanguage.id)
+        const participantsTeachingLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguageId === exchange.teachingLanguageId)
+        const participantsLearningLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguageId === exchange.teachingLanguageId)
         setParticipantsTeachingLanguage(participantsTeachingLanguage);
         setParticipantsLearningLanguage(participantsLearningLanguage);
       }
@@ -110,10 +110,16 @@ export default function ExchangeView () {
       return <div>{divContainer}</div>;
     }
 
+   console.log('amValidToJoin', amValidToJoin);
+   console.log('haveJoined', haveJoined);
    
-
     return exchange ? (<Card shadow="sm" padding="lg" radius="md" withBorder>
     <Card.Section>
+      <Link to="/exchanges"style={{ position: 'absolute', left: 0, top: 0, margin: '5px'}}>
+        <Button size="compact-md" leftSection={<IconArrowLeft style={{ width: '24px', height: '24px' }} stroke={1.5} color="white" />}>
+          Back
+        </Button>
+      </Link>
       <Image
         src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png"
         height={160}
@@ -128,7 +134,7 @@ export default function ExchangeView () {
     <Group justify="space-between" mt="md" mb="xs">
       <Text fw={400} style={{display: 'flex'}}>
         <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  strokeWidth="2"  strokeLtrokeLinecapinecap="round"  strokeLinejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-calendar-month"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>
-        <div>{exchange.time}</div>
+        <div>{exchange.timeUnix}</div>
       </Text>
     </Group>
     <Group justify="space-between" mt="md" mb="xs">
@@ -151,26 +157,30 @@ export default function ExchangeView () {
     <div className='participants-container'>
         <div className='flex'>
             <div style={{padding: '30px'}}>
-                <Text fw={500}>{ exchange.teachingLanguage.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2} participants</Text>
+                <Text fw={500}>{ exchange.teachingLanguageUnfolded.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2} participants</Text>
                 <div className='flex-col' style={{paddingTop: '20px'}}>
-                  {participantsList(participantsTeachingLanguage, exchange.teachingLanguage.id)}
+                  {participantsList(participantsTeachingLanguage, exchange.teachingLanguageId)}
                 </div>
             </div>
             <div style={{padding: '30px'}}>
-                <Text fw={500}>{ exchange.learningLanguage.name }: {participantsLearningLanguage.length} / {exchange.capacity / 2} participants</Text>
+                <Text fw={500}>{ exchange.learningLanguageUnfolded.name }: {participantsLearningLanguage.length} / {exchange.capacity / 2} participants</Text>
                 <div className='flex-col' style={{paddingTop: '20px'}}>
-                    {participantsList(participantsLearningLanguage, exchange.learningLanguage.id)}
+                    {participantsList(participantsLearningLanguage, exchange.learningLanguageId)}
                 </div>
             </div>
         </div>            
     </div>
     <Text fw={900}>Where?</Text>
-    {haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
+    {!amValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
+      Your Languages dont match this Exchange
+    </Button> }
+    {amValidToJoin && haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
       Remove myself
     </Button> }
 
-    {amValidToJoin && !haveJoined && <Button color="blue" fullWidth mt="md" radius="md" disabled={!amValidToJoin && !haveJoined} onClick={handleJoin}>
-      { amValidToJoin ? 'Join' : 'Your Languages dont match this Exchange'}
+    {amValidToJoin && !haveJoined && 
+    <Button color="blue" fullWidth mt="md" radius="md" disabled={!haveJoined} onClick={handleJoin}>
+      Join
     </Button> }
 
   </Card>) : (<div>No Exchange found</div>)

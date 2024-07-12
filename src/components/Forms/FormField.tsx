@@ -1,12 +1,11 @@
-import { TextInput, Select, Image } from '@mantine/core';
+import { TextInput, Select, Image, Text } from '@mantine/core';
 import { LanguagePicker } from '../LanguagePicker';
 import { DateTimePicker } from '@mantine/dates';
 
-// Object.prototype.getName = function() { 
-//   var funcNameRegex = /function (.{1,})\(/;
-//   var results = (funcNameRegex).exec((this).constructor.toString());
-//   return (results && results.length > 1) ? results[1] : "";
-// };
+import { useNavigate } from "react-router-dom";
+
+var datePlus11 = new Date();
+datePlus11.setDate(datePlus11.getDate() + 11);
 
 interface FormFieldProps {
     type: "text" | "checkbox",
@@ -21,6 +20,8 @@ interface outputProps {
 }
 
 const FormField = (p: FormFieldProps, outputProps) => {
+    const navigate = useNavigate();
+
     const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.type === 'text') {
             console.log('handleTextChange', p.property, event.target.value);
@@ -77,16 +78,15 @@ const FormField = (p: FormFieldProps, outputProps) => {
         {p.type === 'language_shower' && 
         <>
             <h4>{p.label}</h4>
-            <h4>{p.value}</h4>
-            {/* <div className='flex'>
+            <div className='flex'>
                 <Image
                     radius="md"
                     h={'20px'}
-                    src={p.value}
+                    src={p.value.smallFlag}
                 />
-                <div>{p.value}</div>
-            </div> */}
-          
+                <div>{p.value.label}</div>
+            </div>
+            {p.property === 'learningLanguage' && <Text c="blue" className='pointer'  size="xs" onClick={() => navigate('/profile')}>Change Language</Text>}
         </>
         }
         {p.type === 'datetime_picker' && 
@@ -95,7 +95,9 @@ const FormField = (p: FormFieldProps, outputProps) => {
           onChange={handleDirectChange}
           label={p.label}
           placeholder={p.placeholder}
-          valueFormat={p.format} />
+          valueFormat={p.format} 
+          minDate={new Date()}
+          maxDate={datePlus11}/>
         }
     </div>
     )

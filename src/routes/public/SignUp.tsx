@@ -1,61 +1,43 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
-import { Button, Input, Text, Space } from '@mantine/core';
-import { userFormFields } from '../../common/forms'
-import { db } from "../../firebaseConfig";
-import {
-    collection,
-    getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-  } from "firebase/firestore";
-import { validateForm } from '../../common/formValidation'
-import Form from '../../components/Forms/Form'
-import _ from 'lodash';
-
-
-const containerMain = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-}
+// import { Button, Input, Text, Space } from '@mantine/core';
+import { userFormFields } from '@/common/formsFields'
+import { updateFormFieldsWithDefaultData, formatPostData } from '@/common/formHelpers'
+import { getOneDoc, postDoc } from '@/common/apiCalls'
+import { validateForm } from '@/common/formValidation'
+import Form from '@/components/Forms/Form'
+import { useAuth } from "@/hooks/useAuth";
 
 const SignUp = ():React.JSX.Element => {
     const navigate = useNavigate();
+    const [busy, setBusy] = useState(true);
     const [error, setError] = useState('');
     const [formValid, setFormValid] = useState(false);
-    const [fields, setFields] = useState(userFormFields)
+    const [formFields, setFormFields] = useState(false);
+    const { languages } = useLanguages();
+    const { login } = useAuth();
 
     async function handleSubmit(e, stateOfChild) {
         e.preventDefault()
         const data = formatPostData(stateOfChild)
-        console.log(data);
-        
         try {
-            // to do externalise all api calls to FB
-            const colRef = collection(db, 'users')
-            const docRef = await addDoc(colRef, data)
-            console.log('docRef', docRef);
+            const { error: postError, docRef: usersPostRef } = await postDoc('users', data)
             notifications.show({ color: 'green', title: 'Success', message: 'User created', })
+            const { error: getOneDocErr, docSnap } = await getOneDoc('users', usersPostRef.id)
+            login({...docSnap.data(), id: docSnap.id})
+            // navigate('/exchanges')
           } catch (error) {
             console.log(error);
             notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
           }
     
     }
-    function formatPostData (data) {
-        return {
-            ...data,
-            learningLanguage: data.learningLanguage.id,
-            teachingLanguage: data.teachingLanguage.id
-        }
-    }
     async function handleValidateForm(form) {
         // yup validation
+        console.log('form', form);
+        
         const validationResponse = await validateForm('newUser', form)
         setError('');
         setFormValid(true);
@@ -74,16 +56,28 @@ const SignUp = ():React.JSX.Element => {
         setError('');
         setFormValid(true);
     }
+    useEffect(() => {
+        if (languages.length > 0) {
+            const defaultData = {
+                teachingLanguage: languages[Math.floor(Math.random() * languages.length)],
+                learningLanguage: languages[Math.floor(Math.random() * languages.length)],
+            }
+            const updatedFields = updateFormFieldsWithDefaultData(userFormFields, defaultData)
+            setFormFields(updatedFields);
+            setBusy(false)
+        }
+        
+      }, [languages])
 
-    return <div style={containerMain}>
+    return <div className="content-wrapper">
         <h2>Sign Up</h2>
-        <Form 
-            fields={fields} 
+        {!busy && <Form 
+            fields={formFields} 
             onSubmit={(e, stateOfChild) => handleSubmit(e, stateOfChild)} 
             validateForm={handleValidateForm} 
             error={error} 
             formValid={formValid}
-        />
+        />}
 
     </div>
 }

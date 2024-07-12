@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UnstyledButton, Menu, Image, Group, Button } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
-import useLanguages from '../hooks/useLanguages';
+import useLanguages from '@/hooks/useLanguages';
 import classes from '../LanguagePicker.module.css';
 
 

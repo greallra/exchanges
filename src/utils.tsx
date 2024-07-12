@@ -3,18 +3,41 @@ import _ from 'lodash'
 export function isFirebaseId (str: string) {
     return typeof str === 'string' && str.length === 20;
 }
-export function formatExchange (exchange: object, languages: Array) {
+// one user object
+export function formatUserData(user, languages) {
+    return {
+        ...user,
+        teachingLanguageUnfoled: getLanguageObjectById(user.teachingLanguageId, languages),
+        learningLanguageUnfoled: getLanguageObjectById(user.learningLanguageId, languages)
+    }
+}
+// array of users
+export function formatUsersData(users, languages) {
+   return users.map((user) => formatUserData(user, languages));
+}
+
+export function getLanguageObjectById(id: string, languages: Array){
+    if (!id || !isFirebaseId(id) || !languages || languages.length === 0) {
+        return ''
+    }
+    return languages.find( lang => lang.id === id) || '';
+}
+
+export function getUserObjectById(id: string, users: Array){
+    if (!id || !isFirebaseId(id) || !users || users.length === 0) {
+        return ''
+    }
+    return users.find( user => user.id === id) || '';
+}
+
+export function formatExchange (exchange: object, languages: Array, users: Array) {
     if (typeof exchange.time === 'object') {
-        exchange.time = format(formatISO(exchange.time.seconds * 1000), 'Pp')
+        exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
+        exchange.timeHour = format(formatISO(exchange.time.seconds * 1000), 'p')
     }
-    if (isFirebaseId(exchange.teachingLanguage)) {
-        const findLanguageObject = languages.find( lang => lang.id === exchange.teachingLanguage);
-        findLanguageObject ? exchange.teachingLanguage = findLanguageObject : null
-    }
-    if (isFirebaseId(exchange.learningLanguage)) {
-        const findLanguageObject = languages.find( lang => lang.id === exchange.learningLanguage);
-        findLanguageObject ? exchange.learningLanguage = findLanguageObject : null
-    }
+    exchange.teachingLanguageUnfolded = getLanguageObjectById(exchange.teachingLanguageId, languages)
+    exchange.learningLanguageUnfolded = getLanguageObjectById(exchange.learningLanguageId, languages)
+    exchange.organizerUnfolded = getUserObjectById(exchange.organizerId, users)
     return {
         ...exchange
     }
@@ -26,4 +49,7 @@ export function formatLanguages (languages: Array) {
             label: lang.name
         }
     })
+}
+export function getUserInitials (user: object) {
+    return user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() 
 }

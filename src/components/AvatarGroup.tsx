@@ -1,14 +1,13 @@
 import { Avatar, Tooltip } from '@mantine/core';
+import { getUserInitials } from '@/utils'
 
-export default function Demo({users, spacesAvailable}) {
-    console.log('users', users);
-    
+export default function AvatarGroup({users, spacesAvailable}) {    
   return (
     <Tooltip.Group openDelay={300} closeDelay={100}>
       <Avatar.Group spacing="sm">
         {users.map((user) => {
             return(<Tooltip label={user.firstname + ' ' + user.lastname} withArrow>
-            <Avatar src="image.png" radius="xl">{user.firstname.charAt(0).toUpperCase()}{user.lastname.charAt(0).toUpperCase()}</Avatar>
+            <Avatar src="image.png" radius="xl">{getUserInitials(user)}</Avatar>
             </Tooltip>)
         })}
         {spacesAvailable > 0 && <Tooltip

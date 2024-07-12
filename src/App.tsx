@@ -17,6 +17,7 @@ import { PublicRoute } from "@/components/PublicRoute";
 import { AuthProvider } from "@/hooks/useAuth";
 import Exchanges from '@/routes/Exchanges'
 import ExchangeView from '@/routes/ExchangeView'
+import ExchangeEdit from '@/routes/ExchangeEdit'
 import Settings from '@/routes/Settings'
 // ADMIN
 import Admin from '@/routes/admin/Index'
@@ -57,8 +58,12 @@ function App() {
                   element={<ProtectedRoute><Nav /><ExchangeView /></ProtectedRoute>}
                 />
                 <Route
+                  path="/exchanges/edit/:exchangeId"
+                  element={<ProtectedRoute><Nav /><ExchangeEdit /></ProtectedRoute>}
+                />
+                <Route
                   path="/profile"
-                  element={<ProtectedRoute><Nav /><Profile /></ProtectedRoute>}
+                  element={<ProtectedRoute><Nav /><AppShell><Profile /></AppShell></ProtectedRoute>}
                 />
                 <Route
                   path="/settings"
@@ -71,7 +76,7 @@ function App() {
                 {/* ADMIN */}
                 <Route
                   path="/admin"
-                  element={<ProtectedRoute><Nav /><Admin /></ProtectedRoute>}
+                  element={<PublicRoute><Nav /><Admin /></PublicRoute>}
                 />
               </Routes>
             </AuthProvider>
