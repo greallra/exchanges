@@ -33,6 +33,7 @@ import { Notifications } from '@mantine/notifications';
 import {
   BrowserRouter, Routes, Route
 } from "react-router-dom";
+console.log('baseUrl',  import.meta.env.BASE_URL);
 
 //https://blog.logrocket.com/handling-user-authentication-redux-toolkit/
 function App() {
@@ -40,7 +41,8 @@ function App() {
     <MantineProvider>
          {/* <FirebaseProvider> */}
           <Notifications position="top-right"/>
-          <BrowserRouter>
+         
+          <BrowserRouter basename='/exchanges/'>
             <AuthProvider>
               {/* {window.localStorage.user && <Nav></Nav>} */}
               <Routes>
