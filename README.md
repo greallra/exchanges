@@ -34,6 +34,5 @@ export default {
 - drop dist foler into netlify
 
 # To Do
-- Integrate Cypress
-- Redux
-- 
+- Integrate Cypress - done
+- Redux use with next db collection
