@@ -1,6 +1,6 @@
 // React
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, history } from "react-router-dom";
 // Hooks
 import useFetch from '@/hooks/useFetch';
 // import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,10 @@ export default function adminTable() {
     const { languages } = useLanguages();
     // const { user } = useAuth()
 
+    if (!param) {
+      window.location.href = window.location.href + '?data=users'
+    }
+
     useEffect(() => {
       if(languages.length === 0 || data.length === 0){
         return
@@ -27,6 +31,7 @@ export default function adminTable() {
       }
       setReactiveData(data)
      }, [languages, data])
+  
      console.log('reactiveData', reactiveData);
      let keys = reactiveData[0] ? Object.keys(reactiveData[0]): []
      // cols to omit

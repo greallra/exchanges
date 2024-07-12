@@ -89,7 +89,6 @@ const exchanges = () => {
                             learningLanguageUnfolded={exchange.learningLanguageUnfolded}
                             teachingLanguageUnfolded={exchange.teachingLanguageUnfolded}
                             participantIds={exchange.participantIds}
-                            isAttending={exchange.isAttending}
                             users={users}
                             />
                         })}

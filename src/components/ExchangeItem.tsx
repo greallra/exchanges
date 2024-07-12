@@ -21,7 +21,6 @@ interface ExchangeItemProps {
     teachingLanguageUnfolded: object,
     smallFlag: string,
     users: Array,
-    isAttending: boolean,
 }
 
 const ExchangeItem = (props: ExchangeItemProps) => {
@@ -41,6 +40,8 @@ const ExchangeItem = (props: ExchangeItemProps) => {
         setParticipantsLearningLanguage(allParticipants.filter( p => p.teachingLanguageId === props.learningLanguageId))
       }, [allParticipants]);
       
+    const isAttending = props.participantIds.includes(user.id);
+
     const iconUsers = <IconUsers style={{ width: '15px', height: '15px' }} stroke={2.5} color="black" />;
     const iconMapPin = <IconMapPin style={{ width: '15px', height: '15px' }} stroke={2.5} color="black" />
     const iconClock = <IconClock style={{ width: '15px', height: '15px' }} stroke={2.5} color="black" />
@@ -50,10 +51,6 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     return (<Link to={`/exchanges/${props.id}`} className='exchange-item'>  
         <div style={{marginRight: '10px', whiteSpace: 'nowrap', minWidth: '90px'}}>
             <Text tt="uppercase" size="md" c="dimmed">{ props.time }</Text>
-            <Link 
-                to={`/exchanges/edit/${props.id}`}>
-                {props.organizerId === user.id && <IconPencil style={{ width: '30px', height: '50px' }} stroke={1.5} color="var(--mantine-color-blue-filled)" />}
-            </Link>
             <div className='flex-al'>
                 <div>{props.teachingLanguageUnfolded && <UserFlag src={props.teachingLanguageUnfolded.smallFlag}/>}</div>
                 {/* <div>-</div> */}
@@ -70,7 +67,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                 <Text tt="" size="xs" c="dimmed" className='mt-1'>Attending</Text>
             </div>} 
         </div>
-        <Card shadow="sm" padding="lg" radius="md" withBorder  style={{width: '100%'}} className={`wrapper searchDiv ${props.isAttending && 'attending'}`}>
+        <Card shadow="sm" padding="lg" radius="md" withBorder  style={{width: '500px'}} className={`wrapper searchDiv ${isAttending ? 'attending' : ''}`}>
             <Card.Section>
             <Image
                 src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/w_1920,c_limit/GoogleMapTA.jpg"
@@ -125,6 +122,14 @@ const ExchangeItem = (props: ExchangeItemProps) => {
             see more
             </Button> */}
         </Card>
+        {/* Right Column */}
+        <div>
+            <Link 
+                to={`/exchanges/edit/${props.id}`} className='ml-1'>
+                {props.organizerId === user.id && <IconPencil style={{ width: '30px', height: '50px' }} stroke={1.5} color="var(--mantine-color-blue-filled)" />}
+            </Link>
+        </div>
+      
     </Link>);
 }
 export default ExchangeItem

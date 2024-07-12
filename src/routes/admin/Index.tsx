@@ -8,7 +8,6 @@ export default function index() {
 
   return (
     <>
-    make this reuseable
     <Table />
     {/* <Users /> */}
     </>
