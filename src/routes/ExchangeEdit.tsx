@@ -5,7 +5,7 @@ import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 import { exchangeFormFields } from '../common/formsFields'
 import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '../common/formHelpers'
-import { updateDoc, getOneDoc } from '../common/apiCalls'
+import { updateDoc, getOneDoc, deleteOneDoc } from '../common/apiCalls'
 import { validateForm } from '../common/formValidation'
 import { useAuth } from "../hooks/useAuth";
 import Form from '../components/Forms/Form'
@@ -25,7 +25,6 @@ export default function ExchangeEdit (props) {
     const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
     console.log(data);
     try {
-        // to do externalise all api calls to FB
         const colRef = await updateDoc('exchanges', params.exchangeId, data)
         console.log('colRef', colRef);
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange updated', })
@@ -51,6 +50,17 @@ export default function ExchangeEdit (props) {
       setFormValid(true);
     }
 
+    async function deleteDoc(){
+      try {
+        const colRef = await deleteOneDoc('exchanges', params.exchangeId)
+        notifications.show({ color: 'green', title: 'Success', message: 'Exchange Deleted', })
+        navigate('/exchanges')
+      } catch (error) {
+        console.log(error);
+        notifications.show({ color: 'red', title: 'Error', message: 'Error deleting Exchange', })
+      }
+    }
+
     useEffect(() => {
       if (languages.length > 0) {
           // saved data
@@ -58,7 +68,8 @@ export default function ExchangeEdit (props) {
           .then(({docSnap}) => {
             console.log(docSnap);
             const mergeData = {...docSnap.data(), id: docSnap.id}
-            delete mergeData.time
+            // delete mergeData.time
+            mergeData.time = new Date(mergeData.time.seconds * 1000)
             const dataUpdatedWithSaved = updateFormFieldsWithSavedData(fields, mergeData)
             console.log('dataUpdatedWithSaved', dataUpdatedWithSaved);
             // not really default data, its based on user data, maaybe change in future
@@ -86,7 +97,9 @@ export default function ExchangeEdit (props) {
                   error={error} 
                   formValid={formValid}
               />}
+              <Button onClick={deleteDoc}>Delete</Button>
               <Space h="xl" />
               <Space h="xl" />
+  
          </div>)
 }

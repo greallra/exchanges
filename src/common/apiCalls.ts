@@ -53,6 +53,28 @@ export async function updateDoc (collectionName: string, docId: string, data: ob
         try {
           const ref = doc(db, collectionName, docId);
           const response = await setDoc(ref, data);
+          console.log('response', response);
+          
+          resolve({
+              error: false,
+              response
+          });
+          
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+}
+
+export async function deleteOneDoc (collectionName: string, docId: string){
+    return new Promise(async (resolve, reject) => {
+        try {
+          const ref = doc(db, collectionName, docId);
+          const response = await deleteDoc(ref);
+          
           resolve({
               error: false,
               response

@@ -1,7 +1,8 @@
-import { Avatar } from '@mantine/core';
+import { Avatar, Text } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from 'react';
 import { exchange, user } from '../common/types';
+import { getUserInitials } from '@/utils'
 
 interface propsAvatarItem {
     user: user,
@@ -44,14 +45,12 @@ export default function AvatarItem({ user, exchange, teachingLanguage, amValidTo
     
     if (user) {
         return (<div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <Avatar src="avatar.png" alt="it's me" size="xl" style={{marginTop: '10px', border: user.id === activeHoverId ?  '4px solid red' : ''}}/>
-            <div>{user.avatar}</div>
-            <div>{user.username}</div>
+            <Avatar src="avatar.png" alt="it's me" size="xl" style={{marginTop: '10px', border: user.id === activeHoverId ?  '4px solid red' : ''}}>{getUserInitials(user)}</Avatar>
+            <Text size="sm" c="dimmed">{user.username}</Text>
         </div>)
     }
     return <div onMouseEnter={() => handleMouseEnter()} onMouseLeave={() => handleMouseLeave()} onClick={joinExchange}>
        <Avatar  size="xl" style={{marginTop: '10px', border: activeHoverId == 'vacant' ?  '4px solid green' : ''}}>+</Avatar>
        <div style={{visibility: 'hidden'}}>dfa</div>
-       <div style={{visibility: 'hidden'}}>dfsad</div>
     </div>
 }

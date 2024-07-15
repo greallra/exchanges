@@ -4,9 +4,11 @@ import { userFormFields } from '@/common/formsFields'
 import { validateForm } from '@/common/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostData } from '@/common/formHelpers'
 import { notifications } from '@mantine/notifications';
+import { useDisclosure } from '@mantine/hooks';
+import { Modal, Button } from '@mantine/core';
 import useLanguages from '@/hooks/useLanguages';
 import Form from '@/components/Forms/Form'
-import { updateDoc } from '@/common/apiCalls'
+import { updateDoc, getOneDoc } from '@/common/apiCalls'
 
 interface alertProps {
     show: boolean,
@@ -14,17 +16,21 @@ interface alertProps {
 }
 
 export default function Profile() {
-  const {user} = useAuth()
+  const {user, login } = useAuth()
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
   const [fields, setFields] = useState(userFormFields);
   const [busy, setBusy] = useState(true);
   const { languages } = useLanguages();
+  const [opened, { open, close }] = useDisclosure(false);
 
   async function handleSubmit(e, stateOfForm) {
     console.log(stateOfForm);
     try {
         const { error: updateError, response } = await updateDoc('users', user.id, formatPostData(stateOfForm))
+        const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
+        open()
+        login({...docSnap.data(), id: docSnap.id})
         notifications.show({ color: 'green', title: 'Success', message: 'Information saved', })
         console.log('response, response');
       } catch (error) {
@@ -76,6 +82,9 @@ export default function Profile() {
           error={error} 
           formValid={formValid}
         />}
+        <Modal opened={opened} onClose={close} title="Authentication">
+        {/* Modal content */}
+      </Modal>
     </div>
   );
 }

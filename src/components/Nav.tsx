@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Image, Avatar, Tooltip } from '@mantine/core';
+import { Button, Image, Avatar, Tooltip, Text } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
 import { getUserInitials, getImage } from '@/utils'
+import UserFlag from '@/components/UserFlag'
 
 const container = {
     display: 'flex',
@@ -27,15 +28,16 @@ export default function () {
                      <Tooltip label={user.firstname + ' ' + user.lastname} withArrow>
                         <Avatar color="cyan" radius="xl" size={30}>{getUserInitials(user)}</Avatar>
                     </Tooltip>
-                    Profile
+                    <span style={{margin: '0 5px'}}>Profile </span>
+                    {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}
+                    {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}
                 </Button>
                 <Button onClick={() => navigate('/settings')} variant={ useLocation().pathname === '/settings' ? "filled" : "default"}>Settings</Button>
             </Button.Group>}
             {!user && <Button.Group>
                 <Button onClick={() => navigate('/')} variant={ useLocation().pathname === '/' ? "filled" : "default"}>Home</Button>
                 <Button onClick={() => navigate('/about')} variant={ useLocation().pathname === '/about' ? "filled" : "default"}>About</Button>
-                <Button onClick={() => navigate('/contact')} variant={ useLocation().pathname === '/contact' ? "filled" : "default"}>Contact</Button>
-                
+                <Button onClick={() => navigate('/contact')} variant={ useLocation().pathname === '/contact' ? "filled" : "default"}>Contact</Button>         
             </Button.Group>}
             <div>
             {user &&  <Button onClick={logout} variant="light">Logout</Button>}
