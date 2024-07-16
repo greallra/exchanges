@@ -10,9 +10,10 @@ function addDaysCustom(days){
 
 for(let x = 0; x <=10; x++){
 	let item = {};
+  // const fmt =
 	if(x === 0){
   	item.name = 'Today'
-    item.date = today
+    item.date = format(today, 'MM/dd/yyyy')
   } else if(x === 1) {
   	item.name = 'Tomorrow'
     item.date = format(addDaysCustom(x), 'MM/dd/yyyy')

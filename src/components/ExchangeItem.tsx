@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useHover } from '@mantine/hooks';
 import { Card, Image, Text, Badge, Button, Box, Group, Divider, Alert, Tooltip } from '@mantine/core';
-import { IconMapPin, IconClock, IconUsers, IconPencil, IconUserCheck, IconChecks, IconAlertCircle, IconFlagFilled, IconFlag, 
+import { IconMapPin, IconClock, IconUsers, IconPencil, IconUserCheck, IconChecks, IconFlagPause, IconFlagFilled, IconFlag, 
     IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconPointer, IconBrain } from '@tabler/icons-react';
 
 import UserFlag from '@/components/UserFlag'
@@ -12,7 +12,8 @@ import images from '../assets/images';
 
 interface ExchangeItemProps {
     id: string,
-    location: string,
+    name: string,
+    location: Object,
     capacity: number,
     organizerId: string,
     organizerUnfolded: object,
@@ -82,7 +83,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     return (
     <Link to={`/exchanges/${props.id}`} className='exchange-item' ref={ref}>  
       <Card padding="xs" radius="md" withBorder className={`${isLanguagesMatch && 'attendinggggg'}`}>
-        <Card.Section component="a" href="https://mantine.dev/">
+        <Card.Section>
             <Image
             src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/w_1920,c_limit/GoogleMapTA.jpg"
             height={60}
@@ -102,7 +103,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
         <Box className='flex-sb'>
             <Box className='flex-al' mt="xs">
                 <IconMapPin style={{ width: '15px', height: '15px' }} stroke={1.0} />
-                <Text ml="xs"  size="sm" c="dimmed">{typeof props.location === 'string' ? props.location : props.location.short_name}</Text>
+                <Text ml="xs" truncate="end" size="sm" c="dimmed" style={{width: '80px'}}>{props.location ? props.location.short_name : null}</Text>
             </Box>
             <Box className='flex-al' mt="xs">
                 {getIconBattery()}
@@ -129,9 +130,9 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                 <Text size="sm" ml="xs" c="dimmed">{participantsLearningLanguage.length} / {props.capacity / 2}</Text>
             </Box>
         </Box>
-        <Box className='flex-al'   style={{position: 'absolute', top: '5px', right: '5px'}}>
-            <IconMapPin style={{ width: '15px', height: '15px' }} stroke={1.0} color='black'/>
-            <Text ml="xs"  size="sm" fw={700}>{typeof props.location === 'string' ? props.location : props.location.short_name}</Text>
+        <Box className='flex-al' style={{position: 'absolute', top: '5px', right: '5px'}}>
+            <Text mr="xxs"  size="xs" fw={700}>{props.name}</Text>
+            <IconFlagPause style={{ width: '15px', height: '15px' }} stroke={2.0} color='black'/>
         </Box>
         {isLanguagesMatch &&  <Tooltip label="This exchange matches your languages"><Box className='flex-al'   style={{position: 'absolute', top: '5px', left: '5px'}}>
             <IconChecks style={{ width: '15px', height: '15px' }} stroke={4.0} color='green'/>

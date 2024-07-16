@@ -4,7 +4,7 @@ import { createContext, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 import useLanguages from '@/hooks/useLanguages';
-import { formatUserData } from '@/utils'
+import { formatUserData } from '@/common/utils'
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

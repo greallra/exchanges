@@ -52,6 +52,7 @@
 }
 .exchange-items-wrapper {
   width: 100%;
+  min-height: 250px;
   display: flex;
   flex-wrap: wrap;
   margin: 10px 0;
@@ -118,6 +119,11 @@
   margin-top: 10px;
   position: absolute !important;
   right: 20px;
+}
+.info-corner {
+  margin-top: 10px;
+  position: absolute !important;
+  left: 20px;
 }
 .full {
   position: absolute;

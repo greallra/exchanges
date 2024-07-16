@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
+import { useSelector, useDispatch } from 'react-redux'
+import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 import { exchangeFormFields } from '@/common/formsFields'
@@ -19,17 +22,21 @@ export default function CreateExchange (props) {
   const { user } = useAuth()
   const { languages } = useLanguages();
 
+  const dispatch = useDispatch()
+
   async function handleSubmit(e:any, stateOfChild: object) {
-    e.preventDefault()
-    const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
-    console.log(data);
     try {
-        // to do externalise all api calls to FB
+        dispatch(setLoading())
+        e.preventDefault()
+        const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+        console.log(data);
         const colRef = await postDoc('exchanges', data)
+        dispatch(cancelLoading())
         console.log('colRef', colRef);
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', })
         navigate('/exchanges')
       } catch (error) {
+        dispatch(cancelLoading())
         console.log(error);
         notifications.show({ color: 'red', title: 'Error', message: 'Error creating Exchange', })
       }

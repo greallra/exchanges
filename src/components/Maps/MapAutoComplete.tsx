@@ -16,7 +16,7 @@ function MapAutoComplete({selected, setSelected}) {
   const { isLoaded } = useJsApiLoader({
     id: `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`,
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ['places']
+    libraries: ['places', 'maps']
   })
   const [map, setMap] = React.useState(null)
 
@@ -30,7 +30,7 @@ function MapAutoComplete({selected, setSelected}) {
   }, [])
 
   const onUnmount = React.useCallback(function callback(map) {
-    setMap(null)
+    // setMap(null)
   }, [])
 
   return isLoaded ? (

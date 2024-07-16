@@ -1,5 +1,5 @@
 import { Avatar, Tooltip } from '@mantine/core';
-import { getUserInitials } from '@/utils'
+import { getUserInitials } from '@/common/utils'
 
 export default function AvatarGroup({users, spacesAvailable}) {    
   return (

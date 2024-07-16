@@ -8,7 +8,7 @@ import useLanguages from '@/hooks/useLanguages';
 // Components
 import { Table } from '@mantine/core';
 // Utils
-import { formatUsersData } from '@/utils'
+import { formatUsersData } from '@/common/utils'
 
 export default function adminTable() {
     const [searchParams, setSearchParams] = useSearchParams();

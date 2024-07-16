@@ -5,11 +5,12 @@ import useFetch from '@/hooks/useFetch';
 import { useAuth } from "@/hooks/useAuth";
 import useLanguages from '@/hooks/useLanguages';
 // Components
-import { Loader, Divider, Text, Switch, Box, ScrollArea } from '@mantine/core';
+import { Loader, Divider, Text, Switch, Box, ScrollArea, Alert, Tooltip } from '@mantine/core';
 import UserFlag from '@/components/UserFlag'
 import ExchangeItem from '@/components/ExchangeItem'
+import { IconInfoCircle, IconChecks } from '@tabler/icons-react';
 // Utils
-import { isFirebaseId, formatExchange } from '@/utils'
+import { isFirebaseId, formatExchange } from '@/common/utils'
 import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
 
 const exchanges = () => {
@@ -63,27 +64,34 @@ const exchanges = () => {
                 <Switch defaultChecked={false} label="Show attending" className='mt-1'  checked={isAttending}
                     onChange={(event) => setIsAttending(event.currentTarget.checked)}/>
             </div>
+            <div className='info-corner'>
+            <Tooltip label="This means an exchange matches your languages">
+                <Box className='flex-al'>
+                <IconChecks style={{ width: '15px', height: '15px', marginRight: '5px' }}  stroke={4.0} color='green'/> =
+                <Text ml="xs"  size="sm" fw={700}>Language Match</Text>
+            </Box></Tooltip>
+            </div>
             {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
                 const areGroupedExchanges = groupedExchange.exchanges.length > 0 
                 return (
                     <div key={i}>
                         {areGroupedExchanges && <h3 className='flex-ac'>
                             <div className='mr-1'>{groupedExchange.name}</div> 
-                            <Text c="dimmed" size="xs">({groupedExchange.date})</Text>
+                            <Text c="dimmed" size="xs" mt="xxs">({groupedExchange.date})</Text>
                         </h3>}
                         {!areGroupedExchanges && (!isAttending && !isMyLanguages) && <h3 className='flex-ac'>
                             <div className='mr-1'>{groupedExchange.name}
                             </div> <Text c="dimmed" size="xs">({groupedExchange.date})</Text>
                         </h3>}
-                   
-                      
+                                            
                         {/* <ScrollArea type="always"> */}
                         <div className='exchange-items-wrapper'>
                         {areGroupedExchanges && groupedExchange.exchanges.map((exchange) => {
                             return <ExchangeItem 
                             id={exchange.id}
                             key={exchange.id}
-                            location={exchange.name} 
+                            name={exchange.name} 
+                            location={exchange.location} 
                             capacity={exchange.capacity} 
                             organizerId={exchange.organizerId} 
                             organizerUnfolded={exchange.organizerUnfolded} 

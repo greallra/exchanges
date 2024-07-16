@@ -12,7 +12,8 @@ let userSchema = object({
 //   email: string().email(),
 });
 let exchangeSchema = object({
-  name: object({
+  name: string().required().min(3).max(23),
+  location: object({
     lat: number().required(),
     lng: number().required(),
     address: string()

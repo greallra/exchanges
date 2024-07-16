@@ -46,9 +46,9 @@ export function formatExchange (exchange: object, languages: Array, users: Array
         exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
         exchange.timeHour = format(formatISO(exchange.time.seconds * 1000), 'p')
     }
-    if (typeof exchange.name === 'string') {
+    if (typeof exchange.name !== 'string') {
         console.log('exchange', {...exchange});
-        exchange.name = "xxxxxx"
+        exchange.name = "not string"
     }
 
     

@@ -56,7 +56,7 @@ function App() {
     <MantineProvider theme={theme}>
          {/* <FirebaseProvider> */}
           <Notifications position="top-right"/>
-          <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+          <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2, fixed: true }}/>
          
           <BrowserRouter>
             <AuthProvider>

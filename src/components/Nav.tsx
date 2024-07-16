@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Image, Avatar, Tooltip, Text } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
-import { getUserInitials, getImage } from '@/utils'
+import { getUserInitials, getImage } from '@/common/utils'
 import UserFlag from '@/components/UserFlag'
 
 const container = {

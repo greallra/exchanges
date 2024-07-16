@@ -11,7 +11,7 @@ import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCh
   IconCoinEuro, IconHourglassEmpty, IconCalendar, IconFlagFilled, IconFlag } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '@/components/AvatarItem'
-import { formatExchange } from '@/utils'
+import { formatExchange } from '@/common/utils'
 import { getOneDoc, updateDoc } from '@/common/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
@@ -57,9 +57,10 @@ export default function ExchangeView () {
       try {
         const meTeachingLanguage = me.teachingLanguageId;
         // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
-        const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
-        if (teachingLanguageCount >= exchange.capacity / 2) {
-          notifications.show({ color: 'red', title: 'Error', message: 'The Exchange is full', })
+        // const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
+        if (participantsTeachingLanguage.length >= exchange.capacity / 2) {
+          dispatch(cancelLoading())
+          notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, })
           return;
         }
         let participantsMeAdded = [...exchange.participantIds, me.id]
@@ -119,6 +120,7 @@ export default function ExchangeView () {
       const divContainer = [];
       for (let i = 0; i < exchange.capacity / 2; i++) {
         divContainer.push(<AvatarItem 
+          key={i} 
           user={participants[i]} 
           exchange={exchange} 
           amValidToJoin={amValidToJoin}
@@ -133,18 +135,18 @@ export default function ExchangeView () {
     return exchange ? (
   <Card shadow="sm" padding="lg" radius="md" withBorder style={{maxWidth: '600px', margin: 'auto'}}>
     <Card.Section>
-      <Link to="/exchanges"style={{ position: 'absolute', left: 0, top: 0, margin: '5px'}} >
+      <Link to="/exchanges" style={{ position: 'absolute', left: 0, top: 0, margin: '5px', zIndex: 2}} id="RouterNavLink">
         <Button size="compact-md" leftSection={<IconArrowLeft style={{ width: '24px', height: '24px' }} stroke={1.5} color="white" />}>
           Back
         </Button>
       </Link>
-      {typeof exchange.name === 'string' && <Image
+      {!exchange.location && <Image
         src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/w_1920,c_limit/GoogleMapTA.jpg"
         height={160}
         alt="Norway"
       /> }
-      {typeof exchange.name === 'object' && 
-       <MapPosition center={exchange.name} />
+      {typeof exchange.location === 'object' && 
+       <MapPosition center={exchange.location} />
       }
     </Card.Section>
     <Group justify="space-between" mt="md" mb="xs">
@@ -202,14 +204,14 @@ export default function ExchangeView () {
             <div style={{padding: '30px'}}>
                 {/* https://github.com/lipis/flag-icons */}
                 {/* <UserFlag src={exchange.teachingLanguageUnfolded.smallFlag}/> */}
-                <div className='flex-ac'><span class={`fi fi-${exchange.teachingLanguageUnfolded.iso_alpha2}`} /></div>
+                <div className='flex-ac'><span className={`fi fi-${exchange.teachingLanguageUnfolded.iso_alpha2}`} /></div>
                 <Text fw={500} mt="xs">{ exchange.teachingLanguageUnfolded.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2}</Text>
                 <div className='flex-col' style={{paddingTop: '10px'}}>
                   {participantsList(participantsTeachingLanguage, exchange.teachingLanguageId)}
                 </div>
             </div>
             <div style={{padding: '30px'}}>
-                <div className='flex-ac'><span class={`fi fi-${exchange.learningLanguageUnfolded.iso_alpha2}`} /></div>
+                <div className='flex-ac'><span className={`fi fi-${exchange.learningLanguageUnfolded.iso_alpha2}`} /></div>
                 <Text fw={500} mt="xs">{ exchange.learningLanguageUnfolded.name }: {participantsLearningLanguage.length} / {exchange.capacity / 2} </Text>
                 <div className='flex-col' style={{paddingTop: '10px'}}>
                     {participantsList(participantsLearningLanguage, exchange.learningLanguageId)}

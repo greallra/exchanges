@@ -9,11 +9,11 @@ const containerStyle = {
 };
 
 
-function MapAutoComplete({center}) {
+function MapPosition({center}) {
   const { isLoaded } = useJsApiLoader({
     id: `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`,
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries:["maps"]
+    libraries: ['places', 'maps']
   })
   
   const [map, setMap] = React.useState(null)
@@ -30,7 +30,7 @@ function MapAutoComplete({center}) {
     setMap(null)
   }, [])
 
-  return isLoaded ? (
+  return isLoaded && center ? (
     <>
       <GoogleMap
         zoom={7}
@@ -47,4 +47,4 @@ function MapAutoComplete({center}) {
 }
 
 
-export default React.memo(MapAutoComplete)
+export default React.memo(MapPosition)
