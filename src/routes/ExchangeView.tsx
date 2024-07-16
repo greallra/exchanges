@@ -55,12 +55,14 @@ export default function ExchangeView () {
     async function handleJoin() {
       dispatch(setLoading())
       try {
-        const meTeachingLanguage = me.teachingLanguageId;
-        // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
-        // const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
-        if (participantsTeachingLanguage.length >= exchange.capacity / 2) {
+        if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === me.teachingLanguageId ) {
           dispatch(cancelLoading())
           notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, })
+          return;
+        }
+        if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === me.learningLanguageId) {
+          dispatch(cancelLoading())
+          notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, })
           return;
         }
         let participantsMeAdded = [...exchange.participantIds, me.id]

@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
+import { useSelector, useDispatch } from 'react-redux'
+import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+
 import { notifications } from '@mantine/notifications';
 // import { Button, Input, Text, Space } from '@mantine/core';
 import { userFormFields } from '@/common/formsFields'
@@ -19,16 +22,21 @@ const SignUp = ():React.JSX.Element => {
     const { languages } = useLanguages();
     const { login } = useAuth();
 
+    const dispatch = useDispatch()
+
     async function handleSubmit(e, stateOfChild) {
         e.preventDefault()
+        dispatch(setLoading())
         const data = formatPostData(stateOfChild)
         try {
             const { error: postError, docRef: usersPostRef } = await postDoc('users', data)
             notifications.show({ color: 'green', title: 'Success', message: 'User created', })
             const { error: getOneDocErr, docSnap } = await getOneDoc('users', usersPostRef.id)
             login({...docSnap.data(), id: docSnap.id})
+            dispatch(cancelLoading())
             // navigate('/exchanges')
           } catch (error) {
+            dispatch(cancelLoading())
             console.log(error);
             notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
           }

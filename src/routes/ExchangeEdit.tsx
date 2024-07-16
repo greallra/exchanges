@@ -97,7 +97,7 @@ export default function ExchangeEdit (props) {
                   error={error} 
                   formValid={formValid}
               />}
-              {/* <Button onClick={deleteDoc}>Delete</Button> */}
+              <Button onClick={deleteDoc}>Delete</Button>
               <Space h="xl" />
               <Space h="xl" />
   
