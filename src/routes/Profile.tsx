@@ -1,14 +1,18 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+
 import { userFormFields } from '@/common/formsFields'
 import { validateForm } from '@/common/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostData } from '@/common/formHelpers'
 import { notifications } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button } from '@mantine/core';
+import { Modal, Button, Alert } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons-react';
 import useLanguages from '@/hooks/useLanguages';
 import Form from '@/components/Forms/Form'
-import { updateDoc, getOneDoc } from '@/common/apiCalls'
+import { updateDoc, getOneDoc, deleteMultipleDocs } from '@/common/apiCalls'
 
 interface alertProps {
     show: boolean,
@@ -18,25 +22,37 @@ interface alertProps {
 export default function Profile() {
   const {user, login } = useAuth()
   const [error, setError] = useState('');
+  const [acceptedWarning, setAcceptedWarning] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const [fields, setFields] = useState(userFormFields);
   const [busy, setBusy] = useState(true);
   const { languages } = useLanguages();
   const [opened, { open, close }] = useDisclosure(false);
 
+  const dispatch = useDispatch()
+
   async function handleSubmit(e, stateOfForm) {
     console.log(stateOfForm);
+    if (!acceptedWarning) {
+      return openWarningModal()
+    }
     try {
+        // dispatch(setLoading())
+        await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
         const { error: updateError, response } = await updateDoc('users', user.id, formatPostData(stateOfForm))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
-        open()
         login({...docSnap.data(), id: docSnap.id})
+        dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'Information saved', })
         console.log('response, response');
       } catch (error) {
         console.log(error);
+        dispatch(cancelLoading())
         notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
       }
+  }
+  function openWarningModal(params:type) {
+    return open()
   }
 
   async function handleValidateForm(form) { 
@@ -82,9 +98,13 @@ export default function Profile() {
           error={error} 
           formValid={formValid}
         />}
-        <Modal opened={opened} onClose={close} title="Authentication">
-        {/* Modal content */}
-      </Modal>
+        <Modal opened={opened} onClose={close} title="Warning">
+            <Alert variant="light" color="red" icon={<IconInfoCircle />}>
+            If you have changed languages. Any exchanges you have created will be delete.
+          </Alert>
+          <Button mt="md" variant="light" onClick={close}>Cancel</Button>
+          <Button mt="md" ml="xs" onClick={() => { setAcceptedWarning(true); close(); }}>Ok</Button>
+        </Modal>
     </div>
   );
 }

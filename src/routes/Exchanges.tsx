@@ -5,7 +5,7 @@ import useFetch from '@/hooks/useFetch';
 import { useAuth } from "@/hooks/useAuth";
 import useLanguages from '@/hooks/useLanguages';
 // Components
-import { Loader, Divider, Text, Switch } from '@mantine/core';
+import { Loader, Divider, Text, Switch, Box, ScrollArea } from '@mantine/core';
 import UserFlag from '@/components/UserFlag'
 import ExchangeItem from '@/components/ExchangeItem'
 // Utils
@@ -56,17 +56,17 @@ const exchanges = () => {
     return (
         <div className='content-wrapper'>
             <div className='filter-switch'>
-                <div className='flex mb-1'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</div>
-                <div className='flex mb-1'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</div>
-                <Switch defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
+                <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
+                <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
+                <Switch mt="xs" defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
                     onChange={(event) => setIsMyLanguages(event.currentTarget.checked)}/>
                 <Switch defaultChecked={false} label="Show attending" className='mt-1'  checked={isAttending}
                     onChange={(event) => setIsAttending(event.currentTarget.checked)}/>
             </div>
-            {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange) => {
+            {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
                 const areGroupedExchanges = groupedExchange.exchanges.length > 0 
                 return (
-                    <div>
+                    <div key={i}>
                         {areGroupedExchanges && <h3 className='flex-ac'>
                             <div className='mr-1'>{groupedExchange.name}</div> 
                             <Text c="dimmed" size="xs">({groupedExchange.date})</Text>
@@ -75,6 +75,10 @@ const exchanges = () => {
                             <div className='mr-1'>{groupedExchange.name}
                             </div> <Text c="dimmed" size="xs">({groupedExchange.date})</Text>
                         </h3>}
+                   
+                      
+                        {/* <ScrollArea type="always"> */}
+                        <div className='exchange-items-wrapper'>
                         {areGroupedExchanges && groupedExchange.exchanges.map((exchange) => {
                             return <ExchangeItem 
                             id={exchange.id}
@@ -92,6 +96,9 @@ const exchanges = () => {
                             users={users}
                             />
                         })}
+                        </div>
+                        {/* </ScrollArea> */}
+                     
                         {!areGroupedExchanges && (!isAttending && !isMyLanguages)  && <Text tt="italic" size="xs" c="dimmed" align="center">No exchanges on this day</Text>}
                         {!areGroupedExchanges && (!isAttending && !isMyLanguages)  &&<Divider variant="dotted"  style={{marginTop: '42px'}}/>}
                     </div>

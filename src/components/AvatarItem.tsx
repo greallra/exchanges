@@ -20,17 +20,17 @@ export default function AvatarItem({ user, exchange, teachingLanguage, amValidTo
             return;
        }
        if (!id) {
-         setActiveHoverId('vacant')
+        //  setActiveHoverId('vacant')
        } else {
-        setActiveHoverId(user.id)
+        // setActiveHoverId(user.id)
         console.log('id of user hovered:', id);
        }
     }
     function handleMouseLeave(id:string) {
         if (!id) {
-            setActiveHoverId('')
+            // setActiveHoverId('')
         } else {
-            setActiveHoverId('')
+            // setActiveHoverId('')
             console.log('id of user hovered:', id);
         }
     }

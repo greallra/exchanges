@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+
 import Nav from '@/components/Nav'
 import '@/App.css'
 // Shell
@@ -25,8 +27,20 @@ import Admin from '@/routes/admin/Index'
 import Footer from '@/routes/Footer'
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
+import { LoadingOverlay } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, createTheme } from '@mantine/core';
+const theme = createTheme({
+  spacing: {
+    xxs: '0.25rem',
+    xs: '0.5rem',
+    sm: '0.75rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+  },
+});
+
 import { Notifications } from '@mantine/notifications';
 // react libraries: https://www.robinwieruch.de/react-libraries/
 
@@ -37,10 +51,12 @@ console.log('baseUrl',  import.meta.env.BASE_URL);
 
 //https://blog.logrocket.com/handling-user-authentication-redux-toolkit/
 function App() {
+  const loading = useSelector((state) => state.loading.value)
   return (
-    <MantineProvider>
+    <MantineProvider theme={theme}>
          {/* <FirebaseProvider> */}
           <Notifications position="top-right"/>
+          <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
          
           <BrowserRouter>
             <AuthProvider>

@@ -7,7 +7,7 @@ export default function AvatarGroup({users, spacesAvailable}) {
       <Avatar.Group spacing="sm">
         {users.map((user) => {
             return(<Tooltip label={user.firstname + ' ' + user.lastname} withArrow>
-            <Avatar src="image.png" radius="xl">{getUserInitials(user)}</Avatar>
+            <Avatar src="image.png" size="sm">{getUserInitials(user)}</Avatar>
             </Tooltip>)
         })}
         {spacesAvailable > 0 && <Tooltip
@@ -18,7 +18,7 @@ export default function AvatarGroup({users, spacesAvailable}) {
             </>
           }
         >
-          <Avatar radius="xl">+{spacesAvailable}</Avatar>
+          <Avatar radius="xl" size="sm">+{spacesAvailable}</Avatar>
         </Tooltip>}
       </Avatar.Group>
     </Tooltip.Group>

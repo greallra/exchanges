@@ -1,17 +1,21 @@
 
-import { Card, Image, Text, Box, Button, Group } from '@mantine/core';
+import { Card, Image, Text, Box, Button, Group, LoadingOverlay } from '@mantine/core';
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 import { useParams, Link } from 'react-router-dom';
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
+// C
 import UserFlag from '@/components/UserFlag'
 import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCheck, 
   IconCoinEuro, IconHourglassEmpty, IconCalendar, IconFlagFilled, IconFlag } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-import AvatarItem from '../components/AvatarItem'
-import { formatExchange } from '../utils'
+import AvatarItem from '@/components/AvatarItem'
+import { formatExchange } from '@/utils'
 import { getOneDoc, updateDoc } from '@/common/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
+import MapPosition from '@/components/Maps/MapPosition'
 
 export default function ExchangeView () {
     const [exchange, setExchange] = React.useState(null);
@@ -22,6 +26,9 @@ export default function ExchangeView () {
     const {user: me} = useAuth()
 
     let params = useParams();
+
+    const isLoading = useSelector((state) => state.loading.value)
+    const dispatch = useDispatch()
 
     let amValidToJoin = false;
     let haveJoined = false;
@@ -46,31 +53,37 @@ export default function ExchangeView () {
     }
 
     async function handleJoin() {
-      const meTeachingLanguage = me.teachingLanguageId;
-      // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
-      const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
-      if (teachingLanguageCount >= exchange.capacity / 2) {
-        notifications.show({ color: 'red', title: 'Error', message: 'The Exchange is full', })
-        return;
-      }
+      dispatch(setLoading())
       try {
+        const meTeachingLanguage = me.teachingLanguageId;
+        // all participants that have teachingLanguage equal to mine, if its less than the capacity, i can join
+        const teachingLanguageCount = [...participantsTeachingLanguage, ...participantsLearningLanguage].filter( item => item.teachingLanguage === meTeachingLanguage).length;
+        if (teachingLanguageCount >= exchange.capacity / 2) {
+          notifications.show({ color: 'red', title: 'Error', message: 'The Exchange is full', })
+          return;
+        }
         let participantsMeAdded = [...exchange.participantIds, me.id]
         await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeAdded });
         await fetchData(params.exchangeId)
+        dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'You Have Joined the exchaged', })
       } catch (error) {
+        dispatch(cancelLoading())
         notifications.show({ color: 'red', title: 'Error', message: 'Error joining the Exchange', })
       }
     }
 
     async function handleRemoveMyself() {
       try {
+        dispatch(setLoading())
         let participantsMeRemoved = [...exchange.participantIds]
         participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
         await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeRemoved});
         await fetchData(params.exchangeId)
+        dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
       } catch (error) {
+        dispatch(cancelLoading())
         notifications.show({ color: 'red', title: 'Error', message: 'Error removing from the Exchange', })
       }
     }
@@ -125,14 +138,17 @@ export default function ExchangeView () {
           Back
         </Button>
       </Link>
-      <Image
+      {typeof exchange.name === 'string' && <Image
         src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/w_1920,c_limit/GoogleMapTA.jpg"
         height={160}
         alt="Norway"
-      />
+      /> }
+      {typeof exchange.name === 'object' && 
+       <MapPosition center={exchange.name} />
+      }
     </Card.Section>
     <Group justify="space-between" mt="md" mb="xs">
-        <Text fw={900}>Language Exchange at {exchange.name}, with a total of {exchange.capacity} people</Text>
+        <Text fw={900}>Language Exchange at {typeof exchange.name === 'string' ? exchange.name : exchange.name.short_name}, with a total of {exchange.capacity} people</Text>
         <div className='flex-al'>
             <div>{exchange.teachingLanguageUnfolded && <UserFlag src={exchange.teachingLanguageUnfolded.smallFlag}/>}</div>
             <div>
@@ -144,7 +160,7 @@ export default function ExchangeView () {
       <div style={{width: '40%'}}>
           <Box className='flex-al' mb="xs">
             <IconMapPin style={{ width: '15px', height: '15px' }} stroke={1.0} />
-            <Text ml="xs"  size="sm" c="dimmed">{exchange.name}</Text>
+            <Text ml="xs"  size="sm" c="dimmed">{typeof exchange.name === 'string' ? exchange.name : exchange.name.short_name}</Text>
           </Box>
           <Box className='flex-al' mb="xs">
           <IconCalendar style={{ width: '14px', height: '14px' }} stroke={1.0}/> 
@@ -156,7 +172,7 @@ export default function ExchangeView () {
           </Box>
       </div>
       <div style={{width: '40%'}}>
-           <Box className='flex-al' mb="xs">
+          <Box className='flex-al' mb="xs">
             <IconFlag style={{ width: '14px', height: '14px' }} stroke={1.0}/>
             <IconFlagFilled style={{ width: '14px', height: '14px' }} stroke={1.0}/>
             <Text ml="xs" size="sm" c="dimmed">{exchange.teachingLanguageUnfolded.name}</Text> ,  <Text  size="sm" c="dimmed">{exchange.learningLanguageUnfolded.name}</Text>
@@ -209,10 +225,10 @@ export default function ExchangeView () {
     </Button> }
 
     {amValidToJoin && !haveJoined && 
-    <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={handleJoin}>
+    <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={handleJoin} loading={isLoading}>
       Join
     </Button> }
 
-  </Card>) : (<div>No Exchange found</div>)
+  </Card>) : (<LoadingOverlay visible={true} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />)
 }
 

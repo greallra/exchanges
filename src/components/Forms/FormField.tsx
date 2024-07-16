@@ -1,6 +1,7 @@
 import { TextInput, Select, Image, Text } from '@mantine/core';
 import { LanguagePicker } from '../LanguagePicker';
 import { DateTimePicker } from '@mantine/dates';
+import MapAutoComplete from "@/components/Maps/MapAutoComplete";
 
 import { useNavigate } from "react-router-dom";
 
@@ -41,6 +42,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
     const handleDirectChange = (language: object) => {  
        p.onChange(p.property, language)
     }
+
     return (
     <div>
         {/* <label htmlFor={p.label}>{p.name}</label>
@@ -98,6 +100,12 @@ const FormField = (p: FormFieldProps, outputProps) => {
           valueFormat={p.format} 
           minDate={new Date()}
           maxDate={datePlus11}/>
+        }
+        {p.type === 'location_picker' && 
+           <MapAutoComplete 
+                selected={p.value} 
+                setSelected={handleDirectChange} 
+            />
         }
     </div>
     )

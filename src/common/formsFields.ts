@@ -42,14 +42,22 @@ export const userFormFields = [
  ];
 
 export const exchangeFormFields = [
+    // { 
+    //  type: "text",
+    //  name: "name",
+    //  label: "Location Name",
+    //  placeholder: "Enter a location",
+    //  property: "name",
+    //  value: "",
+    //  withAsterisk: true
+    // },
     { 
-     type: "text",
+     type: "location_picker",
      name: "name",
      label: "Location Name",
-     placeholder: "Enter a location",
+     placeholder: "Type a location",
      property: "name",
-     value: "",
-     withAsterisk: true
+     value: null
     },
     { 
      type: "select",

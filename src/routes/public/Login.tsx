@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux'
+import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+
 import { Button, Input, Text, Space } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import useFetch from '@/hooks/useFetch';
@@ -11,17 +14,22 @@ export default function Login() {
     const { login } = useAuth();
     const { data: users } = useFetch('users')
 
+    const dispatch = useDispatch()
+
     const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setUserName(e.target.value);
     }
 
     const handleLogin = () => {
+        dispatch(setLoading())
         setError(false);
         console.log(users);  
         const user = users.find((user) => user.username === userName);
         if (user) {
             login(user);
+            dispatch(cancelLoading())
         } else {
+            dispatch(cancelLoading())
             setError(true);
         }
     }

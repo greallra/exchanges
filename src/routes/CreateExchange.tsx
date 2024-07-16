@@ -3,12 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-import { exchangeFormFields } from '../common/formsFields'
-import { formatPostData, updateFormFieldsWithDefaultData } from '../common/formHelpers'
-import { postDoc } from '../common/apiCalls'
-import { validateForm } from '../common/formValidation'
-import { useAuth } from "../hooks/useAuth";
-import Form from '../components/Forms/Form'
+import { exchangeFormFields } from '@/common/formsFields'
+import { formatPostData, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
+import { postDoc } from '@/common/apiCalls'
+import { validateForm } from '@/common/formValidation'
+import { useAuth } from "@/hooks/useAuth";
+import Form from '@/components/Forms/Form'
 
 export default function CreateExchange (props) {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function CreateExchange (props) {
   const [fields, setFields] = useState(exchangeFormFields)
   const { user } = useAuth()
   const { languages } = useLanguages();
-    
+
   async function handleSubmit(e:any, stateOfChild: object) {
     e.preventDefault()
     const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
@@ -66,14 +66,16 @@ export default function CreateExchange (props) {
 
     return (<div className='flex-col'>
             <h2>Create an Exchange</h2>
-              {!busy && <Form 
-                  fields={fields}
-                  user={user} 
-                  onSubmit={(e, stateOfChild) => handleSubmit(e, stateOfChild)} 
-                  validateForm={handleValidateForm} 
-                  error={error} 
-                  formValid={formValid}
-              />}
+              {!busy && 
+                <Form 
+                    fields={fields}
+                    user={user} 
+                    onSubmit={(e, stateOfChild) => handleSubmit(e, stateOfChild)} 
+                    validateForm={handleValidateForm} 
+                    error={error} 
+                    formValid={formValid}
+                />
+              }
               <Space h="xl" />
               <Space h="xl" />
          </div>)

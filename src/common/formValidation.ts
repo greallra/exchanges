@@ -12,7 +12,11 @@ let userSchema = object({
 //   email: string().email(),
 });
 let exchangeSchema = object({
-  name: string().required('Location Name is a required field').min(3),
+  name: object({
+    lat: number().required(),
+    lng: number().required(),
+    address: string()
+  }).required('You must pick a location'),
   capacity: string().required(),
   time: date(),
   duration: string(),

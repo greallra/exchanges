@@ -88,3 +88,33 @@ export async function deleteOneDoc (collectionName: string, docId: string){
           }
     })
 }
+export async function deleteMultipleDocs (collectionName: string, collectionPropertyValue: string, targetId: string){
+    return new Promise(async (resolve, reject) => {
+        try {
+        const collectionRef = collection(db, collectionName)
+        const snapshots = await getDocs(collectionRef)
+        let idsOfDocsToDelete = []
+        snapshots.docs.forEach((doc) => { 
+            if (doc.data()[collectionPropertyValue] === targetId) {
+                idsOfDocsToDelete.push(doc.id)
+            }
+
+        })
+        console.log('idsOfDocsToDelete', idsOfDocsToDelete);
+
+        const promises = idsOfDocsToDelete.map((id) => deleteOneDoc (collectionName, id))
+        const promisesResult = await Promise.all(promises);
+        console.log('promisesResult', promisesResult);
+          resolve({
+              error: false,
+              response: promisesResult
+          });
+          
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+}

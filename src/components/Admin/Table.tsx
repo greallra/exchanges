@@ -35,7 +35,7 @@ export default function adminTable() {
      console.log('reactiveData', reactiveData);
      let keys = reactiveData[0] ? Object.keys(reactiveData[0]): []
      // cols to omit
-     const colsToOmit = ['teachingLanguage', 'learningLanguage', 'name']
+     const colsToOmit = ['teachingLanguage', 'learningLanguage', ]
      keys = keys.filter( key =>  !colsToOmit.includes(key))
 
      function unfoldObject(obj: object) {
