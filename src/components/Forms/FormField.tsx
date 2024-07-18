@@ -1,6 +1,7 @@
-import { TextInput, Select, Image, Text } from '@mantine/core';
+import { TextInput, Select, Image, Text, PasswordInput, rem, Radio, Group } from '@mantine/core';
 import { LanguagePicker } from '../LanguagePicker';
-import { DateTimePicker } from '@mantine/dates';
+import { DateTimePicker, DateInput } from '@mantine/dates';
+import { IconAt, IconCalendarMonth } from '@tabler/icons-react';
 import MapAutoComplete from "@/components/Maps/MapAutoComplete";
 
 import { useNavigate } from "react-router-dom";
@@ -24,7 +25,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
     const navigate = useNavigate();
 
     const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event.target.type === 'text') {
+        if (event.target.type === 'text' || 'password') {
             console.log('handleTextChange', p.property, event.target.value);
             p.onChange(p.property, event.target.value)
         }
@@ -43,6 +44,9 @@ const FormField = (p: FormFieldProps, outputProps) => {
        p.onChange(p.property, language)
     }
 
+    const icon = <IconAt style={{ width: rem(16), height: rem(16) }} />;
+    const iconCal = <IconCalendarMonth style={{ width: rem(16), height: rem(16) }} />;
+
     return (
     <div>
         {/* <label htmlFor={p.label}>{p.name}</label>
@@ -54,11 +58,20 @@ const FormField = (p: FormFieldProps, outputProps) => {
             value={p.value}
             onChange={handleChange}
         /> */}
-        {p.type === 'text' && <TextInput
+        {(p.type === 'text'  || p.type === 'email') && <TextInput
             mt="md"
             label={p.label}
             placeholder={p.placeholder}
             onChange={handleChange}
+            rightSection={p.type === 'email' && icon}
+            error={p.error}
+            value={p.value}
+        />}
+        {p.type === 'password' && <PasswordInput
+            mt="md"
+            label={p.label}
+            placeholder={p.placeholder}
+            onChange={handleTextChange}
             error={p.error}
             value={p.value}
         />}
@@ -91,7 +104,31 @@ const FormField = (p: FormFieldProps, outputProps) => {
             {p.property === 'learningLanguage' && <Text c="blue" className='pointer'  size="xs" onClick={() => navigate('/profile')}>Change Language</Text>}
         </>
         }
-        {p.type === 'datetime_picker' && 
+        {p.type === 'radio' &&  
+          <Radio.Group
+            value={p.value}
+            onChange={handleDirectChange}
+            name={p.name}
+            label={p.label}
+            description={p.description}
+            withAsterisk
+             mt="sm"
+            >
+            <Radio checked label="Male" value="Male" mb="xs"/>
+            <Radio label="Female" value="Female" />
+        </Radio.Group>
+        }
+        {p.type === 'date' &&  
+         <DateInput allowDeselect 
+            value={p.value}
+            label={p.label} 
+            placeholder={p.placeholder} 
+            onChange={handleDirectChange} 
+            rightSection={iconCal}
+            mt="sm"
+            clearable/>
+        }
+        {p.type === 'datetime' && 
          <DateTimePicker 
           value={p.value}
           onChange={handleDirectChange}

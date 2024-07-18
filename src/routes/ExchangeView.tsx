@@ -12,7 +12,7 @@ import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCh
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '@/components/AvatarItem'
 import { formatExchange } from '@/common/utils'
-import { getOneDoc, updateDoc } from '@/common/apiCalls'
+import { getOneDoc, updateDoc } from '@/services/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import MapPosition from '@/components/Maps/MapPosition'

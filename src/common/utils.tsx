@@ -3,9 +3,9 @@ import _ from 'lodash'
 
 // Get image based on env
 export function getImage(path) {
-    console.log('import.meta.env.BASE_URL', import.meta.env.BASE_URL);
-    console.log('import.meta.env.MODE', import.meta.env.MODE);
-    console.log('import.meta.env.PROD', import.meta.env.PROD);
+    // console.log('import.meta.env.BASE_URL', import.meta.env.BASE_URL);
+    // console.log('import.meta.env.MODE', import.meta.env.MODE);
+    // console.log('import.meta.env.PROD', import.meta.env.PROD);
     
     // src="/src/assets/logo.png" - this also works
     return path;
@@ -16,10 +16,15 @@ export function isFirebaseId (str: string) {
 }
 // one user object
 export function formatUserData(user, languages) {
+    let result = {...user}
+    if (user.dob) {
+        result.dob = new Date(formatISO(user.dob.seconds * 1000))
+    }
     return {
-        ...user,
-        teachingLanguageUnfoled: getLanguageObjectById(user.teachingLanguageId, languages),
-        learningLanguageUnfoled: getLanguageObjectById(user.learningLanguageId, languages)
+        ...result,
+        teachingLanguageUnfoled: getObjectById(user.teachingLanguageId, languages),
+        learningLanguageUnfoled: getObjectById(user.learningLanguageId, languages),
+
     }
 }
 // array of users
@@ -27,19 +32,19 @@ export function formatUsersData(users, languages) {
    return users.map((user) => formatUserData(user, languages));
 }
 
-export function getLanguageObjectById(id: string, languages: Array){
-    if (!id || !isFirebaseId(id) || !languages || languages.length === 0) {
+export function getObjectById(id: string, items: Array){
+    if (!id || !isFirebaseId(id) || !items || items.length === 0) {
         return ''
     }
-    return languages.find( lang => lang.id === id) || '';
+    return items.find( item => item.id === id) || '';
 }
 
-export function getUserObjectById(id: string, users: Array){
-    if (!id || !isFirebaseId(id) || !users || users.length === 0) {
-        return ''
-    }
-    return users.find( user => user.id === id) || '';
-}
+// export function getUserObjectById(id: string, users: Array){
+//     if (!id || !isFirebaseId(id) || !users || users.length === 0) {
+//         return ''
+//     }
+//     return users.find( user => user.id === id) || '';
+// }
 
 export function formatExchange (exchange: object, languages: Array, users: Array) {
     if (typeof exchange.time === 'object') {
@@ -52,9 +57,9 @@ export function formatExchange (exchange: object, languages: Array, users: Array
     }
 
     
-    exchange.teachingLanguageUnfolded = getLanguageObjectById(exchange.teachingLanguageId, languages)
-    exchange.learningLanguageUnfolded = getLanguageObjectById(exchange.learningLanguageId, languages)
-    exchange.organizerUnfolded = getUserObjectById(exchange.organizerId, users)
+    exchange.teachingLanguageUnfolded = getObjectById(exchange.teachingLanguageId, languages)
+    exchange.learningLanguageUnfolded = getObjectById(exchange.learningLanguageId, languages)
+    exchange.organizerUnfolded = getObjectById(exchange.organizerId, users)
     return {
         ...exchange
     }
@@ -68,5 +73,8 @@ export function formatLanguages (languages: Array) {
     })
 }
 export function getUserInitials (user: object) {
+    if (!user || !user.firstname || !user.lastname) {
+        return "XX"
+    }
     return user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() 
 }

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { userFormFields } from '@/common/formsFields'
-import { validateForm } from '@/common/formValidation'
+import { validateForm } from '@/services/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostData } from '@/common/formHelpers'
 import { notifications } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
@@ -12,7 +12,7 @@ import { Modal, Button, Alert } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import useLanguages from '@/hooks/useLanguages';
 import Form from '@/components/Forms/Form'
-import { updateDoc, getOneDoc, deleteMultipleDocs } from '@/common/apiCalls'
+import { updateDoc, getOneDoc, deleteMultipleDocs } from '@/services/apiCalls'
 
 interface alertProps {
     show: boolean,
@@ -57,7 +57,7 @@ export default function Profile() {
 
   async function handleValidateForm(form) { 
     // yup validation
-    const validationResponse = await validateForm('newUser', form)
+    const validationResponse = await validateForm('editUser', form)
     console.log(validationResponse);
     setError('');
     setFormValid(true);
@@ -81,7 +81,8 @@ export default function Profile() {
             teachingLanguage: languages.find( lang => lang.id === user.teachingLanguageId),
             learningLanguage: languages.find( lang => lang.id === user.learningLanguageId),
         }
-        const updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
+        let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
+        updatedFields = updatedFields.filter( field => !['password', 'email'].includes(field.property) )
         setFields(updatedFields);
         setBusy(false)
     }

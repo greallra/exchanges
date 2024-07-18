@@ -3,12 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-import { exchangeFormFields } from '../common/formsFields'
-import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '../common/formHelpers'
-import { updateDoc, getOneDoc, deleteOneDoc } from '../common/apiCalls'
-import { validateForm } from '../common/formValidation'
-import { useAuth } from "../hooks/useAuth";
-import Form from '../components/Forms/Form'
+import { exchangeFormFields } from '@/common/formsFields'
+import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
+import { updateDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
+import { validateForm } from '@/services/formValidation'
+import { useAuth } from "@/hooks/useAuth";
+import Form from '@/components/Forms/Form'
 
 export default function ExchangeEdit (props) {
   const navigate = useNavigate();

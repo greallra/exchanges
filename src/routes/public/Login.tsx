@@ -1,43 +1,48 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { Button, Input, Text, Space } from '@mantine/core';
 import { useState, useEffect } from 'react';
-import useFetch from '@/hooks/useFetch';
-import { useAuth } from "@/hooks/useAuth";
 import Alert from '@/components/Alert';
+
+import { signInWithEmailAndPassword, getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
 
 export default function Login() {
     const [error, setError] = useState(false)
-    const [userName, setUserName] = useState([])
-    const { login } = useAuth();
-    const { data: users } = useFetch('users')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     const dispatch = useDispatch()
 
-    const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setUserName(e.target.value);
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        setEmail(e.target.value);
     }
 
     const handleLogin = () => {
         dispatch(setLoading())
         setError(false);
-        console.log(users);  
-        const user = users.find((user) => user.username === userName);
-        if (user) {
-            login(user);
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed in - Listener in Auth Hook will handle setting user and navigate to app
+            dispatch(cancelLoading())  
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
             dispatch(cancelLoading())
-        } else {
-            dispatch(cancelLoading())
-            setError(true);
-        }
+            setError(errorMessage);
+        });
     }
 
     return <div className="flex-col">
     <h1>Login</h1>
-    <h2>Username</h2>
-    <Input placeholder="" value={userName} onChange={handleUserNameChange}/>
+    <h4>Email</h4>
+    <Input placeholder="" value={email} onChange={handleEmailChange}/>
+    <h4>Password</h4>
+    <Input placeholder="" value={password} onChange={(e) => setPassword(e.target.value)}/>
     <Button  disabled={false} variant="filled" size="xl" style={{marginTop: '40px'}} onClick={handleLogin}>Login</Button>
     <Space h="xl" />
     <Alert text="Username not found" show={error}/>

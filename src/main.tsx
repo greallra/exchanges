@@ -5,7 +5,7 @@ import './index.css'
 import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css';
 import { Provider } from 'react-redux'
-import store from './store/store.js'
+import store from '@/store/store.js'
 
 console.log(store.getState());
 

@@ -1,27 +1,59 @@
 export const userFormFields = [
     { 
-     type: "text",
-     name: "username",
-     label: "Username",
-     placeholder: "Enter a username",
-     property: "username",
+        type: "text",
+        name: "firstname",
+        label: "First Name",
+        placeholder: "Enter your firstname",
+        property: "firstname",
+        value: ""
+    },
+    { 
+        type: "text",
+        name: "lastname",
+        label: "Last Name",
+        placeholder: "Enter your lastname",
+        property: "lastname",
+        value: ""
+    },
+    { 
+        type: "text",
+        name: "username",
+        label: "Username",
+        placeholder: "Enter a username",
+        property: "username",
+        value: ""
+    },
+    { 
+     type: "email",
+     name: "email",
+     label: "Email",
+     placeholder: "example@gmail.com",
+     property: "email",
      value: ""
     },
     { 
-     type: "text",
-     name: "firstname",
-     label: "First Name",
-     placeholder: "Enter your firstname",
-     property: "firstname",
+     type: "password",
+     name: "password",
+     label: "Password",
+     placeholder: "Enter a password",
+     property: "password",
      value: ""
     },
     { 
-     type: "text",
-     name: "lastname",
-     label: "Last Name",
-     placeholder: "Enter your lastname",
-     property: "lastname",
-     value: ""
+     type: "date",
+     name: "dob",
+     label: "Date of birth",
+     placeholder: "Enter your date of birth",
+     property: "dob",
+     value: null
+    },
+    { 
+     type: "radio",
+     name: "gender",
+     label: "Gender",
+     placeholder: "Enter your Gender",
+     property: "gender",
+     value: "Female"
     },
     { 
      type: "language_picker",
@@ -69,7 +101,7 @@ export const exchangeFormFields = [
      availableValues: ['2', '4', '6', '8', '10', '12']
     },
     { 
-     type: "datetime_picker",
+     type: "datetime",
      name: "time",
      label: "Time and Date",
      placeholder: "Pick a time and date",

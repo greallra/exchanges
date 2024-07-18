@@ -1,14 +1,17 @@
 // React
-import { useEffect, useState } from 'react';
+import { useEffect, useState, } from 'react';
 import { Link, useSearchParams, history } from "react-router-dom";
 // Hooks
 import useFetch from '@/hooks/useFetch';
 // import { useAuth } from "@/hooks/useAuth";
 import useLanguages from '@/hooks/useLanguages';
 // Components
-import { Table } from '@mantine/core';
+import { Table, Button } from '@mantine/core';
+import { IconPhoto, IconTrash, IconArrowRight } from '@tabler/icons-react';
+
 // Utils
 import { formatUsersData } from '@/common/utils'
+import { updateDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
 
 export default function adminTable() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +38,7 @@ export default function adminTable() {
      console.log('reactiveData', reactiveData);
      let keys = reactiveData[0] ? Object.keys(reactiveData[0]): []
      // cols to omit
-     const colsToOmit = ['teachingLanguage', 'learningLanguage', ]
+     const colsToOmit = ['teachingLanguageId', 'learningLanguageId', ]
      keys = keys.filter( key =>  !colsToOmit.includes(key))
 
      function unfoldObject(obj: object) {
@@ -44,7 +47,9 @@ export default function adminTable() {
         }
         return 'Unfold me'
      }
-
+     async function handleDeleteDoc(id) {
+       await deleteOneDoc(param, id); 
+     }
 
     return (<>
     <h1>{param} List</h1>
@@ -52,6 +57,9 @@ export default function adminTable() {
       <Table.Thead>
         <Table.Tr>
           {keys.map((tableKey) => <Table.Th key={tableKey}>{tableKey}</Table.Th>)}
+          <Table.Th>
+          Actions
+        </Table.Th>
         </Table.Tr>
       </Table.Thead>
        <Table.Tbody> 
@@ -63,6 +71,7 @@ export default function adminTable() {
               {typeof item[tableKey] === 'object' && unfoldObject(item[tableKey])}
               {typeof item[tableKey] === 'string' && item[tableKey]}
             </Table.Td>)}
+            <Table.Td><IconTrash onClick={() => handleDeleteDoc(item.id)} size={14} color='red'/></Table.Td>
           </Table.Tr>)
         })}
         </Table.Tbody>

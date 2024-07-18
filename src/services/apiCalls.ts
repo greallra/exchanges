@@ -10,6 +10,30 @@ import {
     doc,
   } from "firebase/firestore";
 
+  export async function getCollection (collectionName: string) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const colRef = collection(db, collectionName)
+            const snapshots = await getDocs(colRef)
+            let data: Array<object> = []
+            snapshots.docs.forEach((doc) => {
+                data.push({...doc.data(), id: doc.id })
+            })
+            resolve({
+                error: false,
+                data
+            });
+      
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+ 
+}
+
 export async function postDoc (collectionName: string, data){
     return new Promise(async (resolve, reject) => {
         try {

@@ -8,8 +8,8 @@ import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 import { exchangeFormFields } from '@/common/formsFields'
 import { formatPostData, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
-import { postDoc } from '@/common/apiCalls'
-import { validateForm } from '@/common/formValidation'
+import { postDoc } from '@/services/apiCalls'
+import { validateForm } from '@/services/formValidation'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
 
