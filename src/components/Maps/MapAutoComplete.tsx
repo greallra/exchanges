@@ -40,11 +40,11 @@ function MapAutoComplete({selected, setSelected}) {
         zoom={10}
         defaultZoom={10}
         mapContainerStyle={containerStyle}
-        center={selected}
+        center={selected.geometry}
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {selected && <Marker position={selected}/>} 
+        {selected && <Marker position={selected.geometry}/>} 
       </GoogleMap> }
     </>
   ) : <></>

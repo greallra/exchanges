@@ -1,4 +1,4 @@
-import { TextInput, Select, Image, Text, PasswordInput, rem, Radio, Group } from '@mantine/core';
+import { TextInput, Select, Image, Text, PasswordInput, rem, Radio, RangeSlider } from '@mantine/core';
 import { LanguagePicker } from '../LanguagePicker';
 import { DateTimePicker, DateInput } from '@mantine/dates';
 import { IconAt, IconCalendarMonth } from '@tabler/icons-react';
@@ -117,11 +117,18 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 {p.options.map((option, i) => {
                     return <Radio label={option.label} value={option.index} mb="xs"/>
                 })}
-            
-            {/* <Radio label="Female" value="Female" />
-            <Radio label="s" value={p.value? 'yrs': 'no'} /> */}
-            {/* {p.options} */}
         </Radio.Group>
+        }
+        {p.type === 'rangeslider' && 
+        <div style={{padding: '10px 0px 30px 0px'}}>
+            <Text size="sm" fw={500} style={{padding: '10px 0'}}>{p.label}: <Text c="dimmed" size="xs">({p.value[0]} to {p.value[1]} years old)</Text></Text>
+            <RangeSlider 
+                defaultValue={p.value} 
+                onChange={handleDirectChange}
+                marks={p.options}  
+                min={p.min} />
+        </div>
+
         }
         {p.type === 'date' &&  
          <DateInput allowDeselect 

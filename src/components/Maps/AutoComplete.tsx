@@ -22,10 +22,18 @@ const PlacesAuto = ({ setSelected}) => {
         setValue(address);
         clearSuggestions();
         const results = await getGeocode({ address })
+         const { lat, lng } = await getLatLng(results[0])
         console.log('results',results);
-        const { lat, lng } = await getLatLng(results[0])
-        console.log('{ lat, lng }',{ lat, lng });
-        setSelected({lat, lng, long_name: results[0].address_components[0].long_name, short_name: results[0].address_components[0].short_name, formatted_address: results[0].formatted_address })
+        const { geometry, address_components, formatted_address } = results[0]
+        setSelected({
+          geometry: {
+            lat, 
+            lng,
+            // viewport: geometry.viewport
+          }, 
+          address_components,
+          formatted_address
+        })
       }
     
     return (

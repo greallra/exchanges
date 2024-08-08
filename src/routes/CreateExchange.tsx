@@ -28,7 +28,7 @@ export default function CreateExchange (props) {
     try {
         dispatch(setLoading())
         e.preventDefault()
-        const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+        const data = formatPostData({...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] })
         console.log(data);
         const colRef = await postDoc('exchanges', data)
         dispatch(cancelLoading())

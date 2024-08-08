@@ -31,7 +31,7 @@ const Form = (p: FormProps) => {
     }
     return <form onSubmit={(e) => { e.preventDefault(); p.onSubmit(e, state); }} style={{width: '300px', margin: 'auto'}}>
         {p.fields.map((field, i) => {
-            return <FormField 
+              return field.hideField ? <></> : <FormField 
                 key={i} 
                 {...field} 
                 onChange={(property: string, value: string | boolean | number) => handleChange(property, value)} 

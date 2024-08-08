@@ -55,7 +55,7 @@ export const userFormFields = [
      placeholder: "Enter your Gender",
      property: "gender",
      value: 1,
-     options: [{ value: 0, index: 0, matineValue: 'male', label: 'Male' }, { value: 0, index: 1, matineValue: 'female', label: 'Female'  }],
+     options: [{ value: 0, index: 0, matineValue: 'male', label: 'Male' }, { value: 1, index: 1, matineValue: 'female', label: 'Female'  }],
     },
     { 
      type: "language_picker",
@@ -96,7 +96,7 @@ export const exchangeFormFields = [
     { 
      type: "select",
      name: "capacity",
-     label: "Capacity",
+     label: "Number Of Participants",
      placeholder: "How many people in this exchange",
      property: "capacity",
      value: "",
@@ -119,6 +119,30 @@ export const exchangeFormFields = [
      property: "duration",
      value: "",
      availableValues: ['30', '45', '60', '120', '180']
+    },
+    { 
+     type: "radio",
+     name: "gender",
+     label: "Gender",
+     placeholder: "Enter your Gender",
+     property: "gender",
+     value: 2,
+     options: [
+            { value: 0, index: 0, matineValue: 'male', label: 'Male' }, 
+            { value: 1, index: 1, matineValue: 'female', label: 'Female'  },
+            { value: 2, index: 2, matineValue: 'any', label: 'Any Gender'  }],
+    },
+    { 
+    type: "rangeslider",
+    name: "age_range",
+    label: "Age Range of Paticipants",
+    property: "age_range",
+    value: [18, 100],
+    min: 18,
+    options: [
+        { value: 18, label: '18' },
+        { value: 100, label: '100' },
+    ]
     },
     { 
     type: "language_shower",

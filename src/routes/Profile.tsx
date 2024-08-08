@@ -38,6 +38,7 @@ export default function Profile() {
     }
     try {
         // dispatch(setLoading())
+        delete stateOfForm.password
         await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
         const { error: updateError, response } = await updateDoc('users', user.id, formatPostData(stateOfForm))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
@@ -82,7 +83,7 @@ export default function Profile() {
             learningLanguage: languages.find( lang => lang.id === user.learningLanguageId),
         }
         let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
-        updatedFields = updatedFields.filter( field => !['password', 'email'].includes(field.property) )
+        updatedFields = updatedFields.map( field => !['password', 'email'].includes(field.property) ? field : {...field, hideField: true} )
         setFields(updatedFields);
         setBusy(false)
     }
