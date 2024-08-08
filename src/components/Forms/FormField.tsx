@@ -107,15 +107,20 @@ const FormField = (p: FormFieldProps, outputProps) => {
         {p.type === 'radio' &&  
           <Radio.Group
             value={p.value}
-            onChange={handleDirectChange}
+            onChange={(e) => handleDirectChange(Number(e))}
             name={p.name}
             label={p.label}
             description={p.description}
             withAsterisk
-             mt="sm"
+            mt="sm"
             >
-            <Radio checked label="Male" value="Male" mb="xs"/>
-            <Radio label="Female" value="Female" />
+                {p.options.map((option, i) => {
+                    return <Radio label={option.label} value={option.index} mb="xs"/>
+                })}
+            
+            {/* <Radio label="Female" value="Female" />
+            <Radio label="s" value={p.value? 'yrs': 'no'} /> */}
+            {/* {p.options} */}
         </Radio.Group>
         }
         {p.type === 'date' &&  
@@ -125,6 +130,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             placeholder={p.placeholder} 
             onChange={handleDirectChange} 
             rightSection={iconCal}
+            maxDate={p.maxDate}
             mt="sm"
             clearable/>
         }

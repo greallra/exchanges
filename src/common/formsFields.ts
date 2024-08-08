@@ -44,6 +44,7 @@ export const userFormFields = [
      name: "dob",
      label: "Date of birth",
      placeholder: "Enter your date of birth",
+     maxDate: new Date('01-01-2004'),
      property: "dob",
      value: null
     },
@@ -53,7 +54,8 @@ export const userFormFields = [
      label: "Gender",
      placeholder: "Enter your Gender",
      property: "gender",
-     value: "Female"
+     value: 1,
+     options: [{ value: 0, index: 0, matineValue: 'male', label: 'Male' }, { value: 0, index: 1, matineValue: 'female', label: 'Female'  }],
     },
     { 
      type: "language_picker",

@@ -42,10 +42,17 @@ export default function adminTable() {
      keys = keys.filter( key =>  !colsToOmit.includes(key))
 
      function unfoldObject(obj: object) {
+      try {
         if (obj.name) {
           return obj.name;
         }
         return 'Unfold me'
+      } catch (error) {
+        console.log(obj);
+        
+         return `Error unfolding ${JSON.stringify(obj, null, 2)}`
+      }
+ 
      }
      async function handleDeleteDoc(id) {
        await deleteOneDoc(param, id); 
@@ -70,6 +77,7 @@ export default function adminTable() {
             {keys.map((tableKey) => <Table.Td key={tableKey}>
               {typeof item[tableKey] === 'object' && unfoldObject(item[tableKey])}
               {typeof item[tableKey] === 'string' && item[tableKey]}
+              {typeof item[tableKey] === 'number' && item[tableKey]}
             </Table.Td>)}
             <Table.Td><IconTrash onClick={() => handleDeleteDoc(item.id)} size={14} color='red'/></Table.Td>
           </Table.Tr>)

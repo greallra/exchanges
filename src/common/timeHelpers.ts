@@ -8,7 +8,7 @@ function addDaysCustom(days){
     return date.setDate(date.getDate() + days);
   }
 
-for(let x = 0; x <=10; x++){
+for(let x = 0; x <=1; x++){
 	let item = {};
   // const fmt =
 	if(x === 0){
@@ -32,7 +32,10 @@ export function timeFilterExchanges(exchanges, day){
         } catch (error) {
           
         }
-        
+      
+      console.log('--', day.date, exch.time.seconds * 1000);
+      console.log(isSameDay(day.date, exch.time.seconds * 1000));
+
         return isSameDay(day.date, exch.time.seconds * 1000)
     })
 }
