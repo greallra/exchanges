@@ -5,7 +5,7 @@ import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 import { exchangeFormFields } from '@/common/formsFields'
 import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
-import { updateDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
+import { updateOneDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
 import { validateForm } from '@/services/formValidation'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
@@ -25,7 +25,7 @@ export default function ExchangeEdit (props) {
     const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
     console.log(data);
     try {
-        const colRef = await updateDoc('exchanges', params.exchangeId, data)
+        const colRef = await updateOneDoc('exchanges', params.exchangeId, data)
         console.log('colRef', colRef);
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange updated', })
         navigate('/exchanges')

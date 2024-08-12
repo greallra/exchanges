@@ -45,7 +45,7 @@ export default function Login() {
     <Input placeholder="" value={password} onChange={(e) => setPassword(e.target.value)}/>
     <Button  disabled={false} variant="filled" size="xl" style={{marginTop: '40px'}} onClick={handleLogin}>Login</Button>
     <Space h="xl" />
-    <Alert text="Username not found" show={error}/>
+    <Alert text={error} show={error}/>
     <Space h="xl" />
     </div>
 }

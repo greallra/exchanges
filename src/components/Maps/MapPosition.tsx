@@ -33,8 +33,8 @@ function MapPosition({center}) {
   return isLoaded && center ? (
     <>
       <GoogleMap
-        zoom={7}
-        defaultZoom={7}
+        zoom={13}
+        defaultZoom={13}
         mapContainerStyle={containerStyle}
         center={center}
         onLoad={onLoad}

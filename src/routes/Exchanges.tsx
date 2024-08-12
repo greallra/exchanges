@@ -71,6 +71,7 @@ const exchanges = () => {
                 <Text ml="xs"  size="sm" fw={700}>Language Match</Text>
             </Box></Tooltip>
             </div>
+            {exchangesGroupedByDate .length === 0 && <h3 className='flex-ac'>No exchanges in DB :-(</h3>}
             {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
                 const areGroupedExchanges = groupedExchange.exchanges.length > 0 
                 return (

@@ -30,6 +30,7 @@ let exchangeSchema = object({
   location: object({
     geometry: object().required(),
     address_components: array().required(),
+    formatted_address: string(),
   }).required('You must pick a location'),
   capacity: string().required(),
   time: date().required(),

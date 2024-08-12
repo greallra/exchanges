@@ -39,13 +39,6 @@ export function getObjectById(id: string, items: Array){
     return items.find( item => item.id === id) || '';
 }
 
-// export function getUserObjectById(id: string, users: Array){
-//     if (!id || !isFirebaseId(id) || !users || users.length === 0) {
-//         return ''
-//     }
-//     return users.find( user => user.id === id) || '';
-// }
-
 export function formatExchange (exchange: object, languages: Array, users: Array) {
     if (typeof exchange.time === 'object') {
         exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
@@ -77,4 +70,18 @@ export function getUserInitials (user: object) {
         return "XX"
     }
     return user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() 
+}
+
+export function parseLocation (location: object) {
+    if (!location) {
+        return "Parse fail (location)"
+    }
+    // One is web other is RN
+    if (location.formatted_address) {
+        return location.formatted_address;
+    }
+    if (location.structured_formatting) {
+        return location.structured_formatting.main_text;
+    }
+    return "Parse fail (location)"
 }

@@ -12,10 +12,11 @@ import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCh
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '@/components/AvatarItem'
 import { formatExchange } from '@/common/utils'
-import { getOneDoc, updateDoc } from '@/services/apiCalls'
+import { getOneDoc, updateOneDoc } from '@/services/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import MapPosition from '@/components/Maps/MapPosition'
+import AddFriendsPopover from '@/components/AddFriendsPopover'
 
 export default function ExchangeView () {
     const [exchange, setExchange] = React.useState(null);
@@ -40,8 +41,8 @@ export default function ExchangeView () {
       const learningLanguageValues = Object.values(exchange.learningLanguageUnfolded);
       const teachingLanguageValues = Object.values(exchange.teachingLanguageUnfolded);
       const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
-      combinedValues.includes(me.learningLanguageId);
-      combinedValues.includes(me.teachingLanguageId);
+      // combinedValues.includes(me.learningLanguageId);
+      // combinedValues.includes(me.teachingLanguageId);
       
       // if i havent already joined
       // if they are both my target languages
@@ -52,36 +53,57 @@ export default function ExchangeView () {
       }
     }
 
-    async function handleJoin() {
+    async function handleAddParticipant(user = null) {
+      let joiningUser;
+      let joiningUserIsMe = false;
+      console.log('user', user);
+      
+      if (!user) {
+        joiningUser = me
+        joiningUserIsMe = true
+      } else {
+        joiningUser = user 
+      }
       dispatch(setLoading())
       try {
-        if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === me.teachingLanguageId ) {
+        // already joined
+        if (exchange.participantIds.includes(joiningUser.id)) {
+          dispatch(cancelLoading())
+          notifications.show({ color: 'red', title: 'Error', message: `User ${joiningUser.username} has already joined this exchange`, })
+          return;
+        }
+        // no language match
+        if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
           dispatch(cancelLoading())
           notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, })
           return;
         }
-        if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === me.learningLanguageId) {
+        if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === joiningUser.learningLanguageId) {
           dispatch(cancelLoading())
           notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, })
           return;
         }
-        let participantsMeAdded = [...exchange.participantIds, me.id]
-        await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeAdded });
+        console.log('joiningUser', joiningUser);
+        
+        let participantsUserAdded = [...exchange.participantIds, joiningUser.id]
+        console.log('participantsUserAdded', participantsUserAdded);
+        
+        await updateOneDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsUserAdded });
         await fetchData(params.exchangeId)
         dispatch(cancelLoading())
-        notifications.show({ color: 'green', title: 'Success', message: 'You Have Joined the exchaged', })
+        notifications.show({ color: 'green', title: 'Success', message: `${joiningUserIsMe ? 'You have' : `${user.username} has`} joined the exchaged`, })
       } catch (error) {
+        console.log(error);
         dispatch(cancelLoading())
-        notifications.show({ color: 'red', title: 'Error', message: 'Error joining the Exchange', })
+        notifications.show({ color: 'red', title: 'Error', message: `${joiningUserIsMe ? 'Error joining the Exchange' : 'Error adding participant'}`, })
       }
     }
-
     async function handleRemoveMyself() {
       try {
         dispatch(setLoading())
         let participantsMeRemoved = [...exchange.participantIds]
         participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-        await updateDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeRemoved});
+        await updateOneDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeRemoved});
         await fetchData(params.exchangeId)
         dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
@@ -147,9 +169,9 @@ export default function ExchangeView () {
         height={160}
         alt="Norway"
       /> }
-      {typeof exchange.location === 'object' && 
-       <MapPosition center={exchange.location} />
-      }
+      {/* {typeof exchange.location === 'object' && 
+       <MapPosition center={exchange.location.geometry} />
+      } */}
     </Card.Section>
     <Group justify="space-between" mt="md" mb="xs">
         <Text fw={900}>Language Exchange at {typeof exchange.name === 'string' ? exchange.name : exchange.name.short_name}, with a total of {exchange.capacity} people</Text>
@@ -200,8 +222,11 @@ export default function ExchangeView () {
     <Group justify="space-between" mt="md" mb="xs">
         <Text fw={600}>Participants</Text>
     </Group>
+
+    
     
     <div className='participants-container'>
+        <div className='addfriends'><AddFriendsPopover handleAddParticipant={handleAddParticipant} exchange={exchange} /></div>
         <div className='flex'>
             <div style={{padding: '30px'}}>
                 {/* https://github.com/lipis/flag-icons */}
@@ -229,7 +254,7 @@ export default function ExchangeView () {
     </Button> }
 
     {amValidToJoin && !haveJoined && 
-    <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={handleJoin} loading={isLoading}>
+    <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={ () => handleAddParticipant() } loading={isLoading}>
       Join
     </Button> }
 

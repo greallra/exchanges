@@ -7,8 +7,9 @@ import { IconMapPin, IconClock, IconUsers, IconPencil, IconUserCheck, IconChecks
     IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconPointer, IconBrain } from '@tabler/icons-react';
 
 import UserFlag from '@/components/UserFlag'
-import AvatarGroup from '../components/AvatarGroup'
-import images from '../assets/images';
+import AvatarGroup from '@/components/AvatarGroup'
+import images from '@/assets/images';
+import { parseLocation } from '@/common/utils.tsx'
 
 interface ExchangeItemProps {
     id: string,
@@ -103,7 +104,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
         <Box className='flex-sb'>
             <Box className='flex-al' mt="xs">
                 <IconMapPin style={{ width: '15px', height: '15px' }} stroke={1.0} />
-                <Text ml="xs" truncate="end" size="sm" c="dimmed" style={{width: '80px'}}>{props.location ? props.location.short_name : null}</Text>
+                <Text ml="xs" truncate="end" size="sm" c="dimmed" style={{width: '80px'}}>{ parseLocation(props.location) }</Text>
             </Box>
             <Box className='flex-al' mt="xs">
                 {getIconBattery()}

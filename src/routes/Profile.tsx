@@ -12,7 +12,7 @@ import { Modal, Button, Alert } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import useLanguages from '@/hooks/useLanguages';
 import Form from '@/components/Forms/Form'
-import { updateDoc, getOneDoc, deleteMultipleDocs } from '@/services/apiCalls'
+import { updateOneDoc, getOneDoc, deleteMultipleDocs } from '@/services/apiCalls'
 
 interface alertProps {
     show: boolean,
@@ -40,7 +40,7 @@ export default function Profile() {
         // dispatch(setLoading())
         delete stateOfForm.password
         await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
-        const { error: updateError, response } = await updateDoc('users', user.id, formatPostData(stateOfForm))
+        const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostData(stateOfForm))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
         login({...docSnap.data(), id: docSnap.id})
         dispatch(cancelLoading())

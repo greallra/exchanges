@@ -46,7 +46,7 @@ export const userFormFields = [
      placeholder: "Enter your date of birth",
      maxDate: new Date('01-01-2004'),
      property: "dob",
-     value: null
+     value: import.meta.env.MODE === 'development' ? new Date('01-01-1994') : null
     },
     { 
      type: "radio",
@@ -135,7 +135,7 @@ export const exchangeFormFields = [
     { 
     type: "rangeslider",
     name: "age_range",
-    label: "Age Range of Paticipants",
+    label: "Age range of Participants",
     property: "age_range",
     value: [18, 100],
     min: 18,
@@ -154,7 +154,7 @@ export const exchangeFormFields = [
     { 
     type: "language_shower",
     name: "learningLanguage",
-    label: "Your teaching language is",
+    label: "Your learning language is",
     property: "learningLanguage",
     value: null
     },     

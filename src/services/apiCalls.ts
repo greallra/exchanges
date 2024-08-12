@@ -72,9 +72,11 @@ export async function getOneDoc (collectionName: string, docId: string){
     })
 }
 
-export async function updateDoc (collectionName: string, docId: string, data: object){
+export async function updateOneDoc (collectionName: string, docId: string, data: object){
     return new Promise(async (resolve, reject) => {
         try {
+            console.log('collectionName: string, docId: string, data: object', collectionName, docId, data);
+            
           const ref = doc(db, collectionName, docId);
           const response = await setDoc(ref, data);
           console.log('response', response);
@@ -85,6 +87,8 @@ export async function updateDoc (collectionName: string, docId: string, data: ob
           });
           
           } catch (error) {
+            console.log(error);
+            
             reject({
                 error: true,
                 message: error.message
@@ -96,6 +100,8 @@ export async function updateDoc (collectionName: string, docId: string, data: ob
 export async function deleteOneDoc (collectionName: string, docId: string){
     return new Promise(async (resolve, reject) => {
         try {
+            console.log(collectionName, docId);
+            
           const ref = doc(db, collectionName, docId);
           const response = await deleteDoc(ref);
           

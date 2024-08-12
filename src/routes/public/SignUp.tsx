@@ -16,13 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { db } from "@/firebaseConfig";
 import {
-    collection,
-    getDocs,
-    getDoc,
-    addDoc,
     setDoc,
-    updateDoc,
-    deleteDoc,
     doc,
   } from "firebase/firestore";
 
@@ -47,7 +41,7 @@ const SignUp = ():React.JSX.Element => {
             const userCredential = await createUserWithEmailAndPassword(auth, stateOfChild.email, stateOfChild.password)
             console.log('userCredential', userCredential);
             delete data.password
-            await setDoc(doc(db, "users", userCredential.user.uid), { id: userCredential.user.uid, ...data });
+            await setDoc(doc(db, "users", userCredential.user.uid), { id: userCredential.user.uid, uid: userCredential.user.uid, ...data });
             // const { error: postError, docRef: usersPostRef } = await postDoc('users', data)
             notifications.show({ color: 'green', title: 'Success', message: 'User created', })
             // const { error: getOneDocErr, docSnap } = await getOneDoc('users', usersPostRef.id)
