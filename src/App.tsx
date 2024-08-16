@@ -67,6 +67,12 @@ function App() {
                 <Route path="/contact" element={<PublicRoute><Nav /><AppShell><Contact /></AppShell><Footer /></PublicRoute>} />
                 <Route path="/signup" element={<PublicRoute><Nav /><AppShell><SignUp /></AppShell><Footer /></PublicRoute>} />
                 <Route path="/login" element={<PublicRoute><Nav /><AppShell><Login /></AppShell><Footer /></PublicRoute>} />
+                {/* ADMIN */}
+                <Route
+                  path="/admin"
+                  element={<PublicRoute><Nav /><Admin /></PublicRoute>}
+                />
+                 {/* PRIVATE */}
                 <Route
                   path="/exchanges"
                   element={<ProtectedRoute><Nav /><Exchanges /></ProtectedRoute>}
@@ -91,11 +97,7 @@ function App() {
                   path="/createexchange"
                   element={<ProtectedRoute><Nav /><CreateExchange /></ProtectedRoute>}
                 />
-                {/* ADMIN */}
-                <Route
-                  path="/admin"
-                  element={<PublicRoute><Nav /><Admin /></PublicRoute>}
-                />
+              
               </Routes>
             </AuthProvider>
           </BrowserRouter>

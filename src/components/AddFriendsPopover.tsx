@@ -49,18 +49,18 @@ export default function AddFriendsPopover({ handleAddParticipant, exchange }) {
     const userObject = fetchedUsers.find( user => user.username === value)
     setSelected(userObject)
   }
-  
+  const notFoundImage = 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-4.png'
 
   const renderAutocompleteOption: AutocompleteProps['renderOption'] = ({ option }) => (
     <Group gap="sm">
-      <Avatar src={formattedFetchedUsers[option.value].image} size={36} radius="xl" />
+      <Avatar src={formattedFetchedUsers[option.value] ? formattedFetchedUsers[option.value].image : notFoundImage} size={36} radius="xl" />
       <div>
         <Text size="sm">{option.value}</Text>
         <Text size="xs" opacity={0.5}>
-          {formattedFetchedUsers[option.value].username}
+          {formattedFetchedUsers[option.value] ? formattedFetchedUsers[option.value].username : 'no username found'}
         </Text>
         <Text size="xs" opacity={0.5}>
-          {formattedFetchedUsers[option.value].email}
+          {formattedFetchedUsers[option.value] ? formattedFetchedUsers[option.value].email : 'no email found'}
         </Text>
       </div>
     </Group>
@@ -73,13 +73,15 @@ export default function AddFriendsPopover({ handleAddParticipant, exchange }) {
 
   function getData() {
     return fetchedUsers.map( user => ({
-      value: user.username,
+      value: user.username || 'no username found',
       disabled: !checkForlanguageMatch(user)
     }))
   }
 
   const icon = <IconUsersPlus style={{ width: rem(16), height: rem(16) }} />;
-
+  const data = getData()
+  console.log('data', data);
+  
   return (
     <Popover width={400} position="top" withArrow shadow="md" closeOnClickOutside={false}>
       <Popover.Target>
@@ -93,11 +95,10 @@ export default function AddFriendsPopover({ handleAddParticipant, exchange }) {
            maxDropdownHeight={300}
            label="Users"
            placeholder="Search for friends"
-           data={getData()}
+           data={data}
            comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
            onChange={handleChange}
-          // data={['Emily Johnson', 'Ava Rodriguez', 'Olivia Chen', 'Ethan Barnes', 'Mason Taylor']}
-        />
+        /> 
         {selected && selected.id && <div style={{marginTop: 5}}>
         <Button size="xs" onClick={() => handleAddParticipant(selected)}>Add</Button>
         <Button size="xs" variant="filled" color="red" onClick={() => setSelected(undefined)}>Cancel</Button>

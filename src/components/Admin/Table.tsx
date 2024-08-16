@@ -54,8 +54,7 @@ export default function adminTable() {
       }
       setReactiveData(data)
      }, [languages, data])
-  
-   
+
      let keys = reactiveData[0] ? Object.keys(reactiveData[0]): []
      // cols to omit
      const colsToOmit = ['teachingLanguageId', 'learningLanguageId', ]
@@ -107,6 +106,23 @@ export default function adminTable() {
 
     return (<>
     <h1>{param} List</h1>
+    <div className="flex-ac">
+    <h6>Choose Page</h6>
+    <Button.Group>
+      <Button 
+          variant={param === 'users' ? 'primary' : 'default'} 
+          onClick={() => { setSearchParams({ data: 'users' }); window.location.reload() }}>users
+      </Button>
+      <Button 
+            variant={param === 'exchanges' ? 'primary' : 'default'} 
+          onClick={() => { setSearchParams({ data: 'exchanges' }); window.location.reload() }}>exchanges
+      </Button>
+      <Button 
+          variant={param === 'languages' ? 'primary' : 'default'} 
+          onClick={() => { setSearchParams({ data: 'languages' }); window.location.reload() }}>languages
+      </Button>
+    </Button.Group>
+    </div>
     <div className="flex-sb">
       <div>
         <h6>teachingLanguageId</h6>

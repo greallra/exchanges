@@ -3,7 +3,7 @@
 //https://stackoverflow.com/questions/73075596/how-to-use-firebase-authentication-with-redux-toolkit-using-onauthstatechanged
 import { createContext, useContext, useMemo,useEffect } from "react";
 import { useDispatch } from 'react-redux'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 import useLanguages from '@/hooks/useLanguages';
 import { formatUserData } from '@/common/utils'
@@ -19,10 +19,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage("user", null);
   const { languages } = useLanguages();
   const navigate = useNavigate();
+  const location = useLocation()
 
   const dispatch = useDispatch();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      //admin
+      if (location.pathname.includes('admin')) {
+        return;
+      }
       // if no user setUser(LS) to null
       if(!user) { 
         setUser(''); 

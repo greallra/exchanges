@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
+import { checkUserIsValidToJoin, esUpdateDoc } from 'exchanges-shared'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 // C
 import UserFlag from '@/components/UserFlag'
 import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCheck, 
@@ -54,49 +56,24 @@ export default function ExchangeView () {
     }
 
     async function handleAddParticipant(user = null) {
-      let joiningUser;
-      let joiningUserIsMe = false;
-      console.log('user', user);
-      
-      if (!user) {
-        joiningUser = me
-        joiningUserIsMe = true
-      } else {
-        joiningUser = user 
-      }
       dispatch(setLoading())
-      try {
-        // already joined
-        if (exchange.participantIds.includes(joiningUser.id)) {
-          dispatch(cancelLoading())
-          notifications.show({ color: 'red', title: 'Error', message: `User ${joiningUser.username} has already joined this exchange`, })
-          return;
-        }
-        // no language match
-        if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
-          dispatch(cancelLoading())
-          notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, })
-          return;
-        }
-        if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === joiningUser.learningLanguageId) {
-          dispatch(cancelLoading())
-          notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, })
-          return;
-        }
-        console.log('joiningUser', joiningUser);
-        
-        let participantsUserAdded = [...exchange.participantIds, joiningUser.id]
-        console.log('participantsUserAdded', participantsUserAdded);
-        
-        await updateOneDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsUserAdded });
-        await fetchData(params.exchangeId)
+      const { isValid, message, joiningUser } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me, user)
+      console.log('isValid, message', isValid, message);
+      
+      if (!isValid) {
         dispatch(cancelLoading())
-        notifications.show({ color: 'green', title: 'Success', message: `${joiningUserIsMe ? 'You have' : `${user.username} has`} joined the exchaged`, })
-      } catch (error) {
-        console.log(error);
+        notifications.show({ color: 'red', title: 'Error', message })
+        return;
+      } 
+      let participantsUserAdded = [...exchange.participantIds, joiningUser.id || joiningUser.uid]
+      
+      const { error, response } = await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, { participantIds: participantsUserAdded });
+      if (error) {
         dispatch(cancelLoading())
-        notifications.show({ color: 'red', title: 'Error', message: `${joiningUserIsMe ? 'Error joining the Exchange' : 'Error adding participant'}`, })
+        return notifications.show({ color: 'red', title: 'Success', message: response, })
       }
+      await fetchData(params.exchangeId)
+      dispatch(cancelLoading())
     }
     async function handleRemoveMyself() {
       try {

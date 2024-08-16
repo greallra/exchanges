@@ -8,7 +8,7 @@ function addDaysCustom(days){
     return date.setDate(date.getDate() + days);
   }
 
-for(let x = 0; x <=1; x++){
+for(let x = 0; x <=10; x++){
 	let item = {};
   // const fmt =
 	if(x === 0){

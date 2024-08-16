@@ -52,7 +52,7 @@
 }
 .exchange-items-wrapper {
   width: 100%;
-  min-height: 250px;
+  /* min-height: 250px; */
   display: flex;
   flex-wrap: wrap;
   margin: 10px 0;

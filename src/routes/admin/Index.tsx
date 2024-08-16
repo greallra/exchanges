@@ -1,15 +1,13 @@
-import { useAuth } from "@/hooks/useAuth";
-// import Users from './Users'
+// import { useAuth } from "@/hooks/useAuth";
 import Table from "@/components/Admin/Table"
 
 
 export default function index() {
-  const {user} = useAuth()
+  // const {user} = useAuth()
 
   return (
     <>
     <Table />
-    {/* <Users /> */}
     </>
   );
 }
