@@ -6,7 +6,7 @@ import { Button, Input, Text, Space } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import Alert from '@/components/Alert';
 
-import { signInWithEmailAndPassword, getAuth, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 
 const auth = getAuth();
 

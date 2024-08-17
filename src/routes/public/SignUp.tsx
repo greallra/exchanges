@@ -5,20 +5,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { notifications } from '@mantine/notifications';
-import { Button } from "@mantine/core";
-import { userFormFields } from '@/common/formsFields'
-import { updateFormFieldsWithDefaultData, formatPostData } from '@/common/formHelpers'
-import { getOneDoc, postDoc } from '@/services/apiCalls'
-import { validateForm } from '@/services/formValidation'
+import { userFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddDoc, esAddUser } from 'exchanges-shared'
 import Form from '@/components/Forms/Form'
 import { useAuth } from "@/hooks/useAuth";
 // FB
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { db } from "@/firebaseConfig";
-import {
-    setDoc,
-    doc,
-  } from "firebase/firestore";
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 const SignUp = ():React.JSX.Element => {
     const navigate = useNavigate();
@@ -33,21 +25,25 @@ const SignUp = ():React.JSX.Element => {
 
     async function handleSubmit(e, stateOfChild) {
         e.preventDefault()
+        setError('');
         dispatch(setLoading())
-        const data = formatPostData(stateOfChild)
         try {
-            console.log('data', data);
+            const formattedData = formatPostDataUser(stateOfChild)
+            const validationResponse = await validateForm('newUser', formattedData)
+            if (typeof validationResponse === 'string') {
+                notifications.show({ color: 'red', title: 'Error', message: 'Errors in form', })
+                dispatch(cancelLoading())
+                setError(validationResponse);
+                setFormValid(false);
+                return
+            }
             const auth = getAuth();
             const userCredential = await createUserWithEmailAndPassword(auth, stateOfChild.email, stateOfChild.password)
-            console.log('userCredential', userCredential);
-            delete data.password
-            await setDoc(doc(db, "users", userCredential.user.uid), { id: userCredential.user.uid, uid: userCredential.user.uid, ...data });
-            // const { error: postError, docRef: usersPostRef } = await postDoc('users', data)
+            delete formattedData.password
+            await esAddUser (FIREBASE_DB, userCredential, 'users', formattedData)
             notifications.show({ color: 'green', title: 'Success', message: 'User created', })
-            // const { error: getOneDocErr, docSnap } = await getOneDoc('users', usersPostRef.id)
-            login({id: userCredential.user.uid, uid: userCredential.user.uid, ...userCredential.user, ...data})
+            login({id: userCredential.user.uid, uid: userCredential.user.uid, ...userCredential.user, ...formattedData})
             dispatch(cancelLoading())
-            // navigate('/exchanges')
           } catch (error) {
             dispatch(cancelLoading())
             console.log(error, typeof error, error.message);
@@ -86,25 +82,25 @@ const SignUp = ():React.JSX.Element => {
     // }
     async function handleValidateForm(form) {
         // yup validation
-        console.log('form', form);
+        // console.log('form', form);
         
-        const validationResponse = await validateForm('newUser', form)
-        setError('');
-        setFormValid(true);
-        if (typeof validationResponse === 'string') {
-            setError(validationResponse);
-            setFormValid(false);
-            return
-        }
-        if (typeof validationResponse !== 'object') {
-            setError('wrong yup repsonse type');
-            setFormValid(false);
-            return alert('wrong yup repsonse type')
-        }
+        // const validationResponse = await validateForm('newUser', form)
+        // setError('');
+        // setFormValid(true);
+        // if (typeof validationResponse === 'string') {
+        //     setError(validationResponse);
+        //     setFormValid(false);
+        //     return
+        // }
+        // if (typeof validationResponse !== 'object') {
+        //     setError('wrong yup repsonse type');
+        //     setFormValid(false);
+        //     return alert('wrong yup repsonse type')
+        // }
     
-        // success so make post api call possible
-        setError('');
-        setFormValid(true);
+        // // success so make post api call possible
+        // setError('');
+        // setFormValid(true);
     }
     useEffect(() => {
         if (languages.length > 0) {
@@ -128,6 +124,7 @@ const SignUp = ():React.JSX.Element => {
             validateForm={handleValidateForm} 
             error={error} 
             formValid={formValid}
+            overrideInlineValidationTemporaryProp={true}
         />}
 
     </div>

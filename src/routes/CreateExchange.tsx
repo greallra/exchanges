@@ -13,7 +13,7 @@ import { Button, Input, Text, Space } from '@mantine/core';
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
 
-import { formatPostDataExchange, validateForm, esPostDoc, updateFormFieldsWithDefaultData, exchangeFormFields } from 'exchanges-shared'
+import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, exchangeFormFields } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 export default function CreateExchange (props) {
@@ -35,7 +35,6 @@ export default function CreateExchange (props) {
         const formFormatted = formatPostDataExchange(constructForm)
         
         const validationResponse = await validateForm('newExchange', formFormatted)
-        console.log('validationResponse', validationResponse);
         if (typeof validationResponse === 'string') {
           notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
           dispatch(cancelLoading())
@@ -43,7 +42,7 @@ export default function CreateExchange (props) {
           setFormValid(false);
           return
         }
-        const colRef = await esPostDoc(FIREBASE_DB, 'exchanges', validationResponse)
+        const colRef = await esAddDoc(FIREBASE_DB, 'exchanges', validationResponse)
         dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', });
         navigate('/exchanges');
