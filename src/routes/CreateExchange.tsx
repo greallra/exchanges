@@ -6,12 +6,15 @@ import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-import { exchangeFormFields } from '@/common/formsFields'
-import { formatPostData, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
-import { postDoc } from '@/services/apiCalls'
-import { validateForm } from '@/services/formValidation'
+// import { exchangeFormFields } from '@/common/formsFields'
+// import { formatPostData } from '@/common/formHelpers'
+// import { postDoc } from '@/services/apiCalls'
+// import { validateForm } from '@/services/formValidation'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
+
+import { formatPostDataExchange, validateForm, esPostDoc, updateFormFieldsWithDefaultData, exchangeFormFields } from 'exchanges-shared'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 export default function CreateExchange (props) {
   const navigate = useNavigate();
@@ -28,13 +31,22 @@ export default function CreateExchange (props) {
     try {
         dispatch(setLoading())
         e.preventDefault()
-        const data = formatPostData({...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] })
-        console.log(data);
-        const colRef = await postDoc('exchanges', data)
+        const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
+        const formFormatted = formatPostDataExchange(constructForm)
+        
+        const validationResponse = await validateForm('newExchange', formFormatted)
+        console.log('validationResponse', validationResponse);
+        if (typeof validationResponse === 'string') {
+          notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
+          dispatch(cancelLoading())
+          setError(validationResponse);
+          setFormValid(false);
+          return
+        }
+        const colRef = await esPostDoc(FIREBASE_DB, 'exchanges', validationResponse)
         dispatch(cancelLoading())
-        console.log('colRef', colRef);
-        notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', })
-        navigate('/exchanges')
+        notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', });
+        navigate('/exchanges');
       } catch (error) {
         dispatch(cancelLoading())
         console.log(error);
@@ -42,19 +54,18 @@ export default function CreateExchange (props) {
       }
   }
     async function handleValidateForm(form) { 
-      // yup validation
-      const validationResponse = await validateForm('newExchange', form)
-      setError('');
-      setFormValid(true);
-      if (typeof validationResponse === 'string') {
-          setError(validationResponse);
-          setFormValid(false);
-          return
-      }
-      if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // success so make post api call possible
-      setError('');
-      setFormValid(true);
+      // const validationResponse = await validateFormInlineClient('newExchange', form)
+      // setError('');
+      // setFormValid(true);
+      // if (typeof validationResponse === 'string') {
+      //     setError(validationResponse);
+      //     setFormValid(false);
+      //     return
+      // }
+      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
+      // // success so make post api call possible
+      // setError('');
+      // setFormValid(true);
     }
 
     useEffect(() => {
@@ -81,6 +92,7 @@ export default function CreateExchange (props) {
                     validateForm={handleValidateForm} 
                     error={error} 
                     formValid={formValid}
+                    overrideInlineValidationTemporaryProp={true}
                 />
               }
               <Space h="xl" />

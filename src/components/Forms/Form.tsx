@@ -9,7 +9,8 @@ interface FormProps {
     validateForm: <T>(data: T) => void,
     error: string,
     formValid: boolean,
-    user: object
+    user: object,
+    overrideInlineValidationTemporaryProp: boolean
 }
 
 const Form = (p: FormProps) => {
@@ -40,7 +41,7 @@ const Form = (p: FormProps) => {
         <Space h="md" />
         {p.error &&  <Alert variant="light" color="red" title="You have errors" icon={<IconInfoCircle />}>{p.error}</Alert>}
         <Space h="md" />
-        <Button variant="filled" type='submit' disabled={!p.formValid}>Submit</Button>
+        <Button variant="filled" type='submit' disabled={!p.formValid && !p.overrideInlineValidationTemporaryProp}>Submit</Button>
     
     </form>
 }
