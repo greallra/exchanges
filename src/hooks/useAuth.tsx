@@ -6,8 +6,9 @@ import { useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 import useLanguages from '@/hooks/useLanguages';
-import { formatUserData } from '@/common/utils'
-import { getOneDoc } from '@/services/apiCalls'
+// import { formatUserData } from '@/common/utils'
+import { appendAuthDataToUser, esGetOneDoc, formatUserData } from 'exchanges-shared'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 const AuthContext = createContext();
 
@@ -34,19 +35,11 @@ export const AuthProvider = ({ children }) => {
         return navigate("/", { replace: true });
       }
       console.log('hook auth user', user);
-      let userDataFromAuth = {
-        uid: user.uid,
-        accessToken: user.accessToken,
-        email: user.email,
-        // metadata: user.metadata,
-        phoneNumber: user.phoneNumber,
-        displayName: user.displayName,
-      }
-      getOneDoc ('users', user.uid)
-      .then(({docSnap}) => {
-        console.log('get toc', languages); 
-        // setTimeout(() => { console.log('get toc', languages); }, 3000)
-        const combinedAuthAndCollection = {...userDataFromAuth, ...docSnap.data()}
+      const userData = appendAuthDataToUser(user)
+      
+      esGetOneDoc (FIREBASE_DB, 'users', user.uid)
+      .then(({ docSnap }) => {
+        const combinedAuthAndCollection = {...userData, ...docSnap.data()}
 
         console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
         setUser(formatUserData(combinedAuthAndCollection, languages))

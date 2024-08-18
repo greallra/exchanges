@@ -10,11 +10,6 @@ const useLanguages = () => {
         const formattedLanguages = formatLanguages(fetchedLanguages)
         setLanguages(formattedLanguages)
     },[fetchedLanguages])
-    // useEffect(() => {
-    //    if (languages.length > 0) {
-    //     setSelectedLanguage(languages[Math.floor(Math.random() * languages.length)]);
-    //    }
-    // },[languages])
 
     return {
         languages

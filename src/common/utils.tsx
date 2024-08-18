@@ -15,18 +15,18 @@ export function isFirebaseId (str: string) {
     return typeof str === 'string' && str.length === 20;
 }
 // one user object
-export function formatUserData(user, languages) {
-    let result = {...user}
-    if (user.dob) {
-        result.dob = new Date(formatISO(user.dob.seconds * 1000))
-    }
-    return {
-        ...result,
-        teachingLanguageUnfoled: getObjectById(user.teachingLanguageId, languages),
-        learningLanguageUnfoled: getObjectById(user.learningLanguageId, languages),
+// export function formatUserData(user, languages) {
+//     let result = {...user}
+//     if (user.dob) {
+//         result.dob = new Date(formatISO(user.dob.seconds * 1000))
+//     }
+//     return {
+//         ...result,
+//         teachingLanguageUnfoled: getObjectById(user.teachingLanguageId, languages),
+//         learningLanguageUnfoled: getObjectById(user.learningLanguageId, languages),
 
-    }
-}
+//     }
+// }
 // array of users
 export function formatUsersData(users, languages) {
    return users.map((user) => formatUserData(user, languages));

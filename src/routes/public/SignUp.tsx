@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { notifications } from '@mantine/notifications';
-import { userFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddDoc, esAddUser } from 'exchanges-shared'
+import { userFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
 import Form from '@/components/Forms/Form'
 import { useAuth } from "@/hooks/useAuth";
 // FB

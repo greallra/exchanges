@@ -31,9 +31,10 @@ export default function CreateExchange (props) {
     try {
         dispatch(setLoading())
         e.preventDefault()
+
+        
         const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
         const formFormatted = formatPostDataExchange(constructForm)
-        
         const validationResponse = await validateForm('newExchange', formFormatted)
         if (typeof validationResponse === 'string') {
           notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
