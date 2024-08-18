@@ -10,8 +10,8 @@ import { Table, Button, Select } from '@mantine/core';
 import { IconPhoto, IconTrash, IconArrowRight } from '@tabler/icons-react';
 
 // Utils
-import { formatUsersData } from '@/common/utils'
-import { deleteOneDoc } from '@/services/apiCalls'
+import { formatUsersData, esDeleteDoc } from 'exchanges-shared'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 export default function adminTable() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -74,7 +74,7 @@ export default function adminTable() {
  
      }
      async function handleDeleteDoc(id) {
-       await deleteOneDoc(param, id); 
+       await esDeleteDoc(FIREBASE_DB, param, id); 
      }
 
      useEffect(() => {

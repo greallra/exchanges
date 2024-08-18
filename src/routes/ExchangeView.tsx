@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
-import { checkUserIsValidToJoin, esUpdateDoc } from 'exchanges-shared'
+import { checkUserIsValidToJoin, formatExchange, esGetDoc, esUpdateDoc } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 // C
 import UserFlag from '@/components/UserFlag'
@@ -13,8 +13,7 @@ import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCh
   IconCoinEuro, IconHourglassEmpty, IconCalendar, IconFlagFilled, IconFlag } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '@/components/AvatarItem'
-import { formatExchange } from '@/common/utils'
-import { getOneDoc, updateOneDoc } from '@/services/apiCalls'
+// import { getOneDoc, updateOneDoc } from '@/services/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import MapPosition from '@/components/Maps/MapPosition'
@@ -80,7 +79,7 @@ export default function ExchangeView () {
         dispatch(setLoading())
         let participantsMeRemoved = [...exchange.participantIds]
         participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-        await updateOneDoc('exchanges', params.exchangeId, {...exchange, participantIds: participantsMeRemoved});
+        await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, { participantIds: participantsMeRemoved });
         await fetchData(params.exchangeId)
         dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
@@ -92,7 +91,7 @@ export default function ExchangeView () {
 
     async function fetchData(id:string) {  
       try {
-        const {docSnap} = await getOneDoc("exchanges", id);
+        const {docSnap} = await esGetDoc(FIREBASE_DB, "exchanges", id);
         const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages)
 
         setExchange(formattedExchange)

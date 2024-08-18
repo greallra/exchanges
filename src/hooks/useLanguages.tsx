@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import useFetch from './useFetch';
-import { formatLanguages } from '@/common/utils'
+import { formatLanguages } from 'exchanges-shared'
 
 const useLanguages = () => {
     const [languages, setLanguages] = useState([]);

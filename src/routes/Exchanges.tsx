@@ -10,8 +10,8 @@ import UserFlag from '@/components/UserFlag'
 import ExchangeItem from '@/components/ExchangeItem'
 import { IconInfoCircle, IconChecks } from '@tabler/icons-react';
 // Utils
-import { isFirebaseId, formatExchange } from '@/common/utils'
-import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
+import { formatExchange, nextTenDays, timeFilterExchanges } from 'exchanges-shared'
+// import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
 
 const exchanges = () => {
     const [loading, setLoading] = useState(true)
@@ -22,7 +22,6 @@ const exchanges = () => {
     const { user } = useAuth()
     const [isMyLanguages, setIsMyLanguages] = useState(false);
     const [isAttending, setIsAttending] = useState(false);
-    // console.log('nextTenDays', nextTenDays);
 
    useEffect(() => {
     if (exchanges.length > 0 && languages.length > 0) {

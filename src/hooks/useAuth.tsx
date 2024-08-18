@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 import useLanguages from '@/hooks/useLanguages';
 // import { formatUserData } from '@/common/utils'
-import { appendAuthDataToUser, esGetOneDoc, formatUserData } from 'exchanges-shared'
+import { appendAuthDataToUser, esGetDoc, formatUserData } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 const AuthContext = createContext();
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       console.log('hook auth user', user);
       const userData = appendAuthDataToUser(user)
       
-      esGetOneDoc (FIREBASE_DB, 'users', user.uid)
+      esGetDoc (FIREBASE_DB, 'users', user.uid)
       .then(({ docSnap }) => {
         const combinedAuthAndCollection = {...userData, ...docSnap.data()}
 

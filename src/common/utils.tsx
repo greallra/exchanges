@@ -11,9 +11,9 @@ export function getImage(path) {
     return path;
 }
 
-export function isFirebaseId (str: string) {
-    return typeof str === 'string' && str.length === 20;
-}
+// export function isFirebaseId (str: string) {
+//     return typeof str === 'string' && str.length === 20;
+// }
 // one user object
 // export function formatUserData(user, languages) {
 //     let result = {...user}
@@ -28,9 +28,7 @@ export function isFirebaseId (str: string) {
 //     }
 // }
 // array of users
-export function formatUsersData(users, languages) {
-   return users.map((user) => formatUserData(user, languages));
-}
+
 
 export function getObjectById(id: string, items: Array){
     if (!id || !isFirebaseId(id) || !items || items.length === 0) {
@@ -39,32 +37,32 @@ export function getObjectById(id: string, items: Array){
     return items.find( item => item.id === id) || '';
 }
 
-export function formatExchange (exchange: object, languages: Array, users: Array) {
-    if (typeof exchange.time === 'object') {
-        exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
-        exchange.timeHour = format(formatISO(exchange.time.seconds * 1000), 'p')
-    }
-    if (typeof exchange.name !== 'string') {
-        console.log('exchange', {...exchange});
-        exchange.name = "not string"
-    }
+// export function formatExchange (exchange: object, languages: Array, users: Array) {
+//     if (typeof exchange.time === 'object') {
+//         exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
+//         exchange.timeHour = format(formatISO(exchange.time.seconds * 1000), 'p')
+//     }
+//     if (typeof exchange.name !== 'string') {
+//         console.log('exchange', {...exchange});
+//         exchange.name = "not string"
+//     }
 
     
-    exchange.teachingLanguageUnfolded = getObjectById(exchange.teachingLanguageId, languages)
-    exchange.learningLanguageUnfolded = getObjectById(exchange.learningLanguageId, languages)
-    exchange.organizerUnfolded = getObjectById(exchange.organizerId, users)
-    return {
-        ...exchange
-    }
-}
-export function formatLanguages (languages: Array) {
-    return languages.map((lang) => {
-        return {
-            ...lang,
-            label: lang.name
-        }
-    })
-}
+//     exchange.teachingLanguageUnfolded = getObjectById(exchange.teachingLanguageId, languages)
+//     exchange.learningLanguageUnfolded = getObjectById(exchange.learningLanguageId, languages)
+//     exchange.organizerUnfolded = getObjectById(exchange.organizerId, users)
+//     return {
+//         ...exchange
+//     }
+// }
+// export function formatLanguages (languages: Array) {
+//     return languages.map((lang) => {
+//         return {
+//             ...lang,
+//             label: lang.name
+//         }
+//     })
+// }
 export function getUserInitials (user: object) {
     if (!user || !user.firstname || !user.lastname) {
         return "XX"

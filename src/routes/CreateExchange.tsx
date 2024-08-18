@@ -32,7 +32,6 @@ export default function CreateExchange (props) {
         dispatch(setLoading())
         e.preventDefault()
 
-        
         const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
         const formFormatted = formatPostDataExchange(constructForm)
         const validationResponse = await validateForm('newExchange', formFormatted)

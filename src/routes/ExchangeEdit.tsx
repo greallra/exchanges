@@ -3,10 +3,13 @@ import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-import { exchangeFormFields } from '@/common/formsFields'
-import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
-import { updateOneDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
-import { validateForm } from '@/services/formValidation'
+// import { exchangeFormFields } from '@/common/formsFields'
+import {  exchangeFormFields, formatPostDataExchange, esGetDoc, updateFormFieldsWithDefaultData, 
+  updateFormFieldsWithSavedData, esUpdateDoc, esDeleteDoc, validateForm } from 'exchanges-shared'
+// import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
+// import { updateOneDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
+// import { validateForm } from '@/services/formValidation'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
 
@@ -22,10 +25,11 @@ export default function ExchangeEdit (props) {
     
   async function handleSubmit(e:any, stateOfChild: object) {
     e.preventDefault()
-    const data = formatPostData({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
-    console.log(data);
     try {
-        const colRef = await updateOneDoc('exchanges', params.exchangeId, data)
+        const data = formatPostDataExchange({...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid], id: params.exchangeId })
+
+        const validationResponse = await validateForm('editExchange', data)
+        const colRef = await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, data)
         console.log('colRef', colRef);
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange updated', })
         navigate('/exchanges')
@@ -35,24 +39,24 @@ export default function ExchangeEdit (props) {
       }
   }
     async function handleValidateForm(form) { 
-      // yup validation
-      const validationResponse = await validateForm('newExchange', form)
-      setError('');
-      setFormValid(true);
-      if (typeof validationResponse === 'string') {
-          setError(validationResponse);
-          setFormValid(false);
-          return
-      }
-      if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // success so make post api call possible
-      setError('');
-      setFormValid(true);
+      // // yup validation
+      // const validationResponse = await validateForm('newExchange', form)
+      // setError('');
+      // setFormValid(true);
+      // if (typeof validationResponse === 'string') {
+      //     setError(validationResponse);
+      //     setFormValid(false);
+      //     return
+      // }
+      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
+      // // success so make post api call possible
+      // setError('');
+      // setFormValid(true);
     }
 
     async function deleteDoc(){
       try {
-        const colRef = await deleteOneDoc('exchanges', params.exchangeId)
+        const colRef = await esDeleteDoc(FIREBASE_DB, 'exchanges', params.exchangeId)
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange Deleted', })
         navigate('/exchanges')
       } catch (error) {
@@ -64,7 +68,7 @@ export default function ExchangeEdit (props) {
     useEffect(() => {
       if (languages.length > 0) {
           // saved data
-          getOneDoc("exchanges", params.exchangeId)
+          esGetDoc(FIREBASE_DB, "exchanges", params.exchangeId)
           .then(({docSnap}) => {
             console.log(docSnap);
             const mergeData = {...docSnap.data(), id: docSnap.id}
@@ -96,6 +100,7 @@ export default function ExchangeEdit (props) {
                   validateForm={handleValidateForm} 
                   error={error} 
                   formValid={formValid}
+                  overrideInlineValidationTemporaryProp={true}
               />}
               <Button onClick={deleteDoc}>Delete</Button>
               <Space h="xl" />

@@ -3,16 +3,16 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
-import { userFormFields } from '@/common/formsFields'
-import { validateForm } from '@/services/formValidation'
-import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostData } from '@/common/formHelpers'
+import { userFormFields, formatPostDataUser, validateForm, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData,
+  esUpdateDoc, esGetDoc, esDeleteDocs
+} from 'exchanges-shared'
+import { db as FIREBASE_DB } from "@/firebaseConfig";
 import { notifications } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, Button, Alert } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import useLanguages from '@/hooks/useLanguages';
 import Form from '@/components/Forms/Form'
-import { updateOneDoc, getOneDoc, deleteMultipleDocs } from '@/services/apiCalls'
 
 interface alertProps {
     show: boolean,
@@ -37,11 +37,21 @@ export default function Profile() {
       return openWarningModal()
     }
     try {
-        // dispatch(setLoading())
         delete stateOfForm.password
-        await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
-        const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostData(stateOfForm))
-        const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
+        // const constructForm = {...stateOfForm, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
+        const formFormatted = formatPostDataUser(stateOfForm)
+        const validationResponse = await validateForm('editUser', formFormatted)
+        if (typeof validationResponse === 'string') {
+          notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
+          dispatch(cancelLoading())
+          setError(validationResponse);
+          setFormValid(false);
+          return
+        }
+  
+        await esDeleteDocs(FIREBASE_DB, 'exchanges', 'organizerId', user.id)
+        const { error: updateError, response } = await esUpdateDoc(FIREBASE_DB, 'users', user.id || user.uid, formatPostDataUser(stateOfForm))
+        const { error: getOneDocErr, docSnap } = await esGetDoc(FIREBASE_DB, 'users', user.id || user.uid)
         login({...docSnap.data(), id: docSnap.id})
         dispatch(cancelLoading())
         notifications.show({ color: 'green', title: 'Success', message: 'Information saved', })
@@ -54,23 +64,6 @@ export default function Profile() {
   }
   function openWarningModal(params:type) {
     return open()
-  }
-
-  async function handleValidateForm(form) { 
-    // yup validation
-    const validationResponse = await validateForm('editUser', form)
-    console.log(validationResponse);
-    setError('');
-    setFormValid(true);
-    if (typeof validationResponse === 'string') {
-        setError(validationResponse);
-        setFormValid(false);
-        return
-    }
-    if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-    // success so make post api call possible
-    setError('');
-    setFormValid(true);
   }
 
   useEffect(() => {
@@ -96,9 +89,10 @@ export default function Profile() {
       {!busy &&<Form 
           fields={fields} 
           onSubmit={(e, stateOfForm) => handleSubmit(e, stateOfForm)} 
-          validateForm={handleValidateForm} 
+          validateForm={() => {}} 
           error={error} 
           formValid={formValid}
+          overrideInlineValidationTemporaryProp={true}
         />}
         <Modal opened={opened} onClose={close} title="Warning">
             <Alert variant="light" color="red" icon={<IconInfoCircle />}>
