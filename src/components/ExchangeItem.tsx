@@ -9,7 +9,7 @@ import { IconMapPin, IconClock, IconUsers, IconPencil, IconUserCheck, IconChecks
 import UserFlag from '@/components/UserFlag'
 import AvatarGroup from '@/components/AvatarGroup'
 import images from '@/assets/images';
-import { parseLocation } from '@/common/utils.tsx'
+import { parseLocation } from 'exchanges-shared'
 
 interface ExchangeItemProps {
     id: string,

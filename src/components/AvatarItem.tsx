@@ -2,7 +2,7 @@ import { Avatar, Text } from '@mantine/core';
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from 'react';
 import { exchange, user } from '../common/types';
-import { getUserInitials } from '@/common/utils'
+import { getUserInitials } from 'exchanges-shared'
 
 interface propsAvatarItem {
     user: user,

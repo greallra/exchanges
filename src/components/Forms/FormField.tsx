@@ -49,15 +49,6 @@ const FormField = (p: FormFieldProps, outputProps) => {
 
     return (
     <div>
-        {/* <label htmlFor={p.label}>{p.name}</label>
-        <input 
-            type={p.type} 
-            name={p.property}
-            placeholder={p.placeholder}
-            id={p.id}
-            value={p.value}
-            onChange={handleChange}
-        /> */}
         {(p.type === 'text'  || p.type === 'email') && <TextInput
             mt="md"
             label={p.label}
@@ -66,6 +57,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             rightSection={p.type === 'email' && icon}
             error={p.error}
             value={p.value}
+            required={p.required}
         />}
         {p.type === 'password' && <PasswordInput
             mt="md"
@@ -74,6 +66,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             onChange={handleTextChange}
             error={p.error}
             value={p.value}
+            required={p.required}
         />}
         {p.type === 'select' &&  <Select
             label={p.label}
@@ -83,10 +76,11 @@ const FormField = (p: FormFieldProps, outputProps) => {
             value={p.value}
             data={p.availableValues}
             max={p.max || null}
+            required={p.required}
         />}
         {p.type === 'language_picker' && 
         <>
-            <h4>{p.label}</h4>
+            <h4>{p.label} *</h4>
             <LanguagePicker selected={p.value} setSelected={handleDirectChange}/>
         </>
         }
@@ -138,6 +132,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             onChange={handleDirectChange} 
             rightSection={iconCal}
             maxDate={p.maxDate}
+            required={p.required}
             mt="sm"
             clearable/>
         }

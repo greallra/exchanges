@@ -4,7 +4,7 @@ import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
 // import { exchangeFormFields } from '@/common/formsFields'
-import {  exchangeFormFields, formatPostDataExchange, esGetDoc, updateFormFieldsWithDefaultData, 
+import {  getFormFields, formatPostDataExchange, esGetDoc, updateFormFieldsWithDefaultData, 
   updateFormFieldsWithSavedData, esUpdateDoc, esDeleteDoc, validateForm } from 'exchanges-shared'
 // import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
@@ -18,7 +18,7 @@ export default function ExchangeEdit (props) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState(exchangeFormFields)
+  const [fields, setFields] = useState(getFormFields('exchange', 'WEB'))
   const { user } = useAuth()
   const { languages } = useLanguages();
   let params = useParams();
@@ -39,19 +39,6 @@ export default function ExchangeEdit (props) {
       }
   }
     async function handleValidateForm(form) { 
-      // // yup validation
-      // const validationResponse = await validateForm('newExchange', form)
-      // setError('');
-      // setFormValid(true);
-      // if (typeof validationResponse === 'string') {
-      //     setError(validationResponse);
-      //     setFormValid(false);
-      //     return
-      // }
-      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // // success so make post api call possible
-      // setError('');
-      // setFormValid(true);
     }
 
     async function deleteDoc(){
@@ -69,7 +56,7 @@ export default function ExchangeEdit (props) {
       if (languages.length > 0) {
           // saved data
           esGetDoc(FIREBASE_DB, "exchanges", params.exchangeId)
-          .then(({docSnap}) => {
+          .then(({ docSnap }) => {
             console.log(docSnap);
             const mergeData = {...docSnap.data(), id: docSnap.id}
             // delete mergeData.time

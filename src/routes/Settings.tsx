@@ -2,8 +2,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from '@mantine/core';
 import Counter from '@/features/counter/Counter'
 import { notifications } from '@mantine/notifications';
-import { deleteOneDoc } from '@/services/apiCalls'
-import { auth } from '@/firebaseConfig'
+import { esDeleteDoc } from 'exchanges-shared'
+import { auth, db as FIREBASE_DB } from '@/firebaseConfig'
 
 export default function Settings() {
   const {user} = useAuth()
@@ -13,7 +13,7 @@ export default function Settings() {
     console.log(userFB);
     userFB.delete().then(() => {
           console.log('auth deleted success');     
-          deleteOneDoc('users', user.id)
+          esDeleteDoc(FIREBASE_DB, 'users', user.id)
           .then(() => {
             console.log('user collection deleted success');
             notifications.show({ color: 'green', title: 'Success', message: 'Account deleted', })

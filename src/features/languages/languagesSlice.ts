@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import store from '@/store/store.js'
-import { getCollection } from '@/services/apiCalls'
+import { esGetCollection } from 'exchanges-shared'
+import { db as FIREBASE_DB} from '@/firebaseConfig'
 
 export const languagesSlice = createSlice({
     name: 'languages',
@@ -17,7 +18,7 @@ export const languagesSlice = createSlice({
 
 
 async function getLanguages() {
-    const { data } = await getCollection('languages')
+    const { data } = await esGetCollection(FIREBASE_DB, 'languages')
      
     store.dispatch(setLanguages(data))
 }

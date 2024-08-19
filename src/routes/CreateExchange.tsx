@@ -6,14 +6,10 @@ import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-// import { exchangeFormFields } from '@/common/formsFields'
-// import { formatPostData } from '@/common/formHelpers'
-// import { postDoc } from '@/services/apiCalls'
-// import { validateForm } from '@/services/formValidation'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
 
-import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, exchangeFormFields } from 'exchanges-shared'
+import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, getFormFields } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 
 export default function CreateExchange (props) {
@@ -21,7 +17,7 @@ export default function CreateExchange (props) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState(exchangeFormFields)
+  const [fields, setFields] = useState(getFormFields('exchange', 'WEB'))
   const { user } = useAuth()
   const { languages } = useLanguages();
 

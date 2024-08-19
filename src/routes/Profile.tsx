@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
-import { userFormFields, formatPostDataUser, validateForm, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData,
-  esUpdateDoc, esGetDoc, esDeleteDocs
+import { formatPostDataUser, validateForm, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData,
+  esUpdateDoc, esGetDoc, esDeleteDocs, getFormFields
 } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 import { notifications } from '@mantine/notifications';
@@ -24,7 +24,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [acceptedWarning, setAcceptedWarning] = useState(false);
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState(userFormFields);
+  const [fields, setFields] = useState(getFormFields('user', 'WEB'));
   const [busy, setBusy] = useState(true);
   const { languages } = useLanguages();
   const [opened, { open, close }] = useDisclosure(false);
@@ -32,7 +32,8 @@ export default function Profile() {
   const dispatch = useDispatch()
 
   async function handleSubmit(e, stateOfForm) {
-    console.log(stateOfForm);
+    console.log(stateOfForm);        
+    setError('')
     if (!acceptedWarning) {
       return openWarningModal()
     }

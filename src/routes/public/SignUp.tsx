@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 
 import { notifications } from '@mantine/notifications';
-import { userFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
+import { getFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
 import Form from '@/components/Forms/Form'
 import { useAuth } from "@/hooks/useAuth";
 // FB
@@ -17,7 +17,7 @@ const SignUp = ():React.JSX.Element => {
     const [busy, setBusy] = useState(true);
     const [error, setError] = useState('');
     const [formValid, setFormValid] = useState(false);
-    const [formFields, setFormFields] = useState(false);
+    const [formFields, setFormFields] = useState([]);
     const { languages } = useLanguages();
     const { login } = useAuth();
 
@@ -81,26 +81,7 @@ const SignUp = ():React.JSX.Element => {
     //     });
     // }
     async function handleValidateForm(form) {
-        // yup validation
-        // console.log('form', form);
-        
-        // const validationResponse = await validateForm('newUser', form)
-        // setError('');
-        // setFormValid(true);
-        // if (typeof validationResponse === 'string') {
-        //     setError(validationResponse);
-        //     setFormValid(false);
-        //     return
-        // }
-        // if (typeof validationResponse !== 'object') {
-        //     setError('wrong yup repsonse type');
-        //     setFormValid(false);
-        //     return alert('wrong yup repsonse type')
-        // }
-    
-        // // success so make post api call possible
-        // setError('');
-        // setFormValid(true);
+
     }
     useEffect(() => {
         if (languages.length > 0) {
@@ -108,7 +89,7 @@ const SignUp = ():React.JSX.Element => {
                 teachingLanguage: languages[Math.floor(Math.random() * languages.length)],
                 learningLanguage: languages[Math.floor(Math.random() * languages.length)],
             }
-            const updatedFields = updateFormFieldsWithDefaultData(userFormFields, defaultData)
+            const updatedFields = updateFormFieldsWithDefaultData(getFormFields('user', 'WEB'), defaultData)
             setFormFields(updatedFields);
             setBusy(false)
         }
