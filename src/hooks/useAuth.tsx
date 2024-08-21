@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         const combinedAuthAndCollection = {...userData, ...docSnap.data()}
 
         console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
-        setUser(formatUserData(combinedAuthAndCollection, languages))
+        login(formatUserData(combinedAuthAndCollection, languages))
       })
       .catch((e) => console.log(e))
     });
@@ -52,9 +52,8 @@ export const AuthProvider = ({ children }) => {
 
   // call this function when you want to authenticate the user
   const login = async (data) => {
-    // const formattedData = formatUserData(data, languages)
-    // setUser(formattedData);
-    // navigate("/exchanges");
+    setUser(data);
+    // window.location.href = window.location.origin + '/exchanges'
   };
 
   // call this function to sign out logged in user

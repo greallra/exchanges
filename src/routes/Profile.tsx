@@ -93,7 +93,6 @@ export default function Profile() {
           validateForm={() => {}} 
           error={error} 
           formValid={formValid}
-          overrideInlineValidationTemporaryProp={true}
         />}
         <Modal opened={opened} onClose={close} title="Warning">
             <Alert variant="light" color="red" icon={<IconInfoCircle />}>

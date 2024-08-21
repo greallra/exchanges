@@ -87,7 +87,6 @@ export default function ExchangeEdit (props) {
                   validateForm={handleValidateForm} 
                   error={error} 
                   formValid={formValid}
-                  overrideInlineValidationTemporaryProp={true}
               />}
               <Button onClick={deleteDoc}>Delete</Button>
               <Space h="xl" />

@@ -11,7 +11,6 @@ import ExchangeItem from '@/components/ExchangeItem'
 import { IconInfoCircle, IconChecks } from '@tabler/icons-react';
 // Utils
 import { formatExchange, nextTenDays, timeFilterExchanges } from 'exchanges-shared'
-// import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
 
 const exchanges = () => {
     const [loading, setLoading] = useState(true)
@@ -56,8 +55,12 @@ const exchanges = () => {
     return (
         <div className='content-wrapper'>
             <div className='filter-switch'>
-                <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
-                <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
+                <Box className='flex-sb'>
+                    <Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && user.teachingLanguageUnfoled && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}
+                </Box>
+                <Box className='flex-sb'>
+                    <Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && user.learningLanguageUnfoled && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}
+                </Box>
                 <Switch mt="xs" defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
                     onChange={(event) => setIsMyLanguages(event.currentTarget.checked)}/>
                 <Switch defaultChecked={false} label="Show attending" className='mt-1'  checked={isAttending}

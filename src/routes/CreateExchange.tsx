@@ -87,7 +87,6 @@ export default function CreateExchange (props) {
                     validateForm={handleValidateForm} 
                     error={error} 
                     formValid={formValid}
-                    overrideInlineValidationTemporaryProp={true}
                 />
               }
               <Space h="xl" />

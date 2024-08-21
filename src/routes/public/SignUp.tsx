@@ -105,7 +105,6 @@ const SignUp = ():React.JSX.Element => {
             validateForm={handleValidateForm} 
             error={error} 
             formValid={formValid}
-            overrideInlineValidationTemporaryProp={true}
         />}
 
     </div>
