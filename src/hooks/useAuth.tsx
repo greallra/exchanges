@@ -2,7 +2,6 @@
 //https://blog.logrocket.com/authentication-react-router-v6/
 //https://stackoverflow.com/questions/73075596/how-to-use-firebase-authentication-with-redux-toolkit-using-onauthstatechanged
 import { createContext, useContext, useMemo,useEffect } from "react";
-import { useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 import useLanguages from '@/hooks/useLanguages';
@@ -22,7 +21,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation()
 
-  const dispatch = useDispatch();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       //admin

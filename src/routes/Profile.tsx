@@ -1,7 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useStore } from '@/store/store'
 
 import { formatPostDataUser, validateForm, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData,
   esUpdateDoc, esGetDoc, esDeleteDocs, getFormFields
@@ -29,9 +28,12 @@ export default function Profile() {
   const { languages } = useLanguages();
   const [opened, { open, close }] = useDisclosure(false);
 
-  const dispatch = useDispatch()
+  const loading = useStore((state) => state.loading)
+  const setLoading = useStore((state) => state.setLoading)
+  const stopLoading = useStore((state) => state.stopLoading)
 
   async function handleSubmit(e, stateOfForm) {
+    setLoading()
     console.log(stateOfForm);        
     setError('')
     if (!acceptedWarning) {
@@ -44,7 +46,7 @@ export default function Profile() {
         const validationResponse = await validateForm('editUser', formFormatted)
         if (typeof validationResponse === 'string') {
           notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
-          dispatch(cancelLoading())
+          stopLoading()
           setError(validationResponse);
           setFormValid(false);
           return
@@ -54,12 +56,12 @@ export default function Profile() {
         const { error: updateError, response } = await esUpdateDoc(FIREBASE_DB, 'users', user.id || user.uid, formatPostDataUser(stateOfForm))
         const { error: getOneDocErr, docSnap } = await esGetDoc(FIREBASE_DB, 'users', user.id || user.uid)
         login({...docSnap.data(), id: docSnap.id})
-        dispatch(cancelLoading())
+        stopLoading()
         notifications.show({ color: 'green', title: 'Success', message: 'Information saved', })
         console.log('response, response');
       } catch (error) {
         console.log(error);
-        dispatch(cancelLoading())
+        stopLoading()
         notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
       }
   }
@@ -93,6 +95,7 @@ export default function Profile() {
           validateForm={() => {}} 
           error={error} 
           formValid={formValid}
+          loading={loading}
         />}
         <Modal opened={opened} onClose={close} title="Warning">
             <Alert variant="light" color="red" icon={<IconInfoCircle />}>

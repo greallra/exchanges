@@ -56,10 +56,10 @@ const exchanges = () => {
         <div className='content-wrapper'>
             <div className='filter-switch'>
                 <Box className='flex-sb'>
-                    <Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && user.teachingLanguageUnfoled && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}
+                    <Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && user.teachingLanguageUnfolded && <UserFlag src={user.teachingLanguageUnfolded.smallFlag}/>}
                 </Box>
                 <Box className='flex-sb'>
-                    <Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && user.learningLanguageUnfoled && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}
+                    <Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && user.learningLanguageUnfolded && <UserFlag src={user.learningLanguageUnfolded.smallFlag}/>}
                 </Box>
                 <Switch mt="xs" defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
                     onChange={(event) => setIsMyLanguages(event.currentTarget.checked)}/>

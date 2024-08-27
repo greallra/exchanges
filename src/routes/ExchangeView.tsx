@@ -1,98 +1,88 @@
 
 import { Card, Image, Text, Box, Button, Group, LoadingOverlay } from '@mantine/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useStore } from '@/store/store'
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
-import { checkUserIsValidToJoin, formatExchange, esGetDoc, esUpdateDoc } from 'exchanges-shared'
+import { checkUserIsValidToJoin, formatExchange, esGetDoc, esUpdateDoc, removeMyselfFromExchange, checkUserHasJoined, getPartipantsOfLanguages, addParticipantToExchange } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
+import {
+  useQuery,
+} from '@tanstack/react-query'
 // C
 import UserFlag from '@/components/UserFlag'
-import { IconUsers, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCheck, 
+import { IconUsers, IconUser, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCheck, 
   IconCoinEuro, IconHourglassEmpty, IconCalendar, IconFlagFilled, IconFlag } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import AvatarItem from '@/components/AvatarItem'
-// import { getOneDoc, updateOneDoc } from '@/services/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import MapPosition from '@/components/Maps/MapPosition'
 import AddFriendsPopover from '@/components/AddFriendsPopover'
 
+
 export default function ExchangeView () {
     const [exchange, setExchange] = React.useState(null);
+    const [notValidReason, setNotValidReason] = React.useState('');
     const { languages } = useLanguages();
     const { data: users } = useFetch('users')
     const [participantsTeachingLanguage, setParticipantsTeachingLanguage] = React.useState([])
     const [participantsLearningLanguage, setParticipantsLearningLanguage] = React.useState([])
     const {user: me} = useAuth()
-
     let params = useParams();
 
-    const isLoading = useSelector((state) => state.loading.value)
-    const dispatch = useDispatch()
 
-    let amValidToJoin = false;
-    let haveJoined = false;
-    if (exchange && exchange.participantIds) {
-      haveJoined = exchange.participantIds.includes(me.id);
-    }
+    const isLoading = useStore((state) => state.loading)
+    const setLoading = useStore((state) => state.setLoading)
+    const stopLoading = useStore((state) => state.stopLoading)
 
-    if (exchange && exchange.learningLanguageId && exchange && exchange.teachingLanguageId) {
-      const learningLanguageValues = Object.values(exchange.learningLanguageUnfolded);
-      const teachingLanguageValues = Object.values(exchange.teachingLanguageUnfolded);
-      const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
-      // combinedValues.includes(me.learningLanguageId);
-      // combinedValues.includes(me.teachingLanguageId);
-      
-      // if i havent already joined
-      // if they are both my target languages
-      if (
-          combinedValues.includes(me.learningLanguageId) && 
-          combinedValues.includes(me.teachingLanguageId)) {
-          amValidToJoin = true;
-      }
-    }
+    let iAmValidToJoin = false
+    let haveJoined = false
 
     async function handleAddParticipant(user = null) {
-      dispatch(setLoading())
+      setLoading()
       const { isValid, message, joiningUser } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me, user)
       console.log('isValid, message', isValid, message);
       
       if (!isValid) {
-        dispatch(cancelLoading())
+        stopLoading()
         notifications.show({ color: 'red', title: 'Error', message })
         return;
       } 
-      let participantsUserAdded = [...exchange.participantIds, joiningUser.id || joiningUser.uid]
-      
-      const { error, response } = await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, { participantIds: participantsUserAdded });
+      const { error, response } = await addParticipantToExchange(FIREBASE_DB, exchange, joiningUser)
       if (error) {
-        dispatch(cancelLoading())
+        stopLoading()
         return notifications.show({ color: 'red', title: 'Success', message: response, })
       }
       await fetchData(params.exchangeId)
-      dispatch(cancelLoading())
+      stopLoading()
     }
     async function handleRemoveMyself() {
       try {
-        dispatch(setLoading())
-        let participantsMeRemoved = [...exchange.participantIds]
-        participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-        await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, { participantIds: participantsMeRemoved });
+        setLoading()
+        const { success, message } = await removeMyselfFromExchange(FIREBASE_DB, me, exchange)
+        if (!success) {
+          stopLoading()
+          notifications.show({ color: 'red', title: 'Error', message })
+          return;
+        } 
         await fetchData(params.exchangeId)
-        dispatch(cancelLoading())
-        notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
+        stopLoading()
+        notifications.show({ color: 'green', title: 'Success', message, })
       } catch (error) {
-        dispatch(cancelLoading())
-        notifications.show({ color: 'red', title: 'Error', message: 'Error removing from the Exchange', })
+        stopLoading()
+        notifications.show({ color: 'red', title: 'Error', message: error.message, })
       }
     }
 
     async function fetchData(id:string) {  
       try {
-        const {docSnap} = await esGetDoc(FIREBASE_DB, "exchanges", id);
-        const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages)
+        const { docSnap } = await esGetDoc(FIREBASE_DB, "exchanges", id);
+
+        console.log(223, languages, users);
+        
+        const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages, users)
 
         setExchange(formattedExchange)
       } catch (error) {
@@ -104,17 +94,37 @@ export default function ExchangeView () {
       if (languages.length > 0) {
         fetchData(params.exchangeId)
       }
-    }, [languages]); 
+    }, [languages, users]); 
 
     React.useEffect(() => {
       if (exchange && users.length > 0) {
-        const participantsTeachingLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguageId === exchange.teachingLanguageId)
-        const participantsLearningLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguageId === exchange.teachingLanguageId)
+        const { participantsTeachingLanguage, participantsLearningLanguage } = getPartipantsOfLanguages(users, exchange)
         setParticipantsTeachingLanguage(participantsTeachingLanguage);
         setParticipantsLearningLanguage(participantsLearningLanguage);
       }
+      if (exchange && me && participantsTeachingLanguage && participantsLearningLanguage) {
+        const { isValid, message } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me);
+        console.log('message', message);
+        setNotValidReason(message)
+        
+        iAmValidToJoin = isValid
+        haveJoined = checkUserHasJoined(me, exchange);
+      }
 
     }, [exchange, users])
+
+    React.useEffect(() => {
+      if (exchange && me && participantsTeachingLanguage && participantsLearningLanguage) {
+        const { isValid, message } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me);
+        console.log('isValid', isValid);
+        console.log('message', message);
+        setNotValidReason(message)
+        
+        iAmValidToJoin = isValid
+        haveJoined = checkUserHasJoined(me, exchange);
+      }
+
+    }, [exchange, me, participantsTeachingLanguage, participantsLearningLanguage])
 
     const participantsList = (participants, teachingLanguage) => {
       const divContainer = [];
@@ -123,16 +133,16 @@ export default function ExchangeView () {
           key={i} 
           user={participants[i]} 
           exchange={exchange} 
-          amValidToJoin={amValidToJoin}
+          amValidToJoin={iAmValidToJoin}
           teachingLanguage={teachingLanguage} />)
       }
       return <div>{divContainer}</div>;
     }
 
-   console.log('amValidToJoin', amValidToJoin);
+   console.log('iAmValidToJoin', iAmValidToJoin);
    console.log('haveJoined', haveJoined);
-   
-    return exchange ? (
+
+  return exchange ? (
   <Card shadow="sm" padding="lg" radius="md" withBorder style={{maxWidth: '600px', margin: 'auto'}}>
     <Card.Section>
       <Link to="/exchanges" style={{ position: 'absolute', left: 0, top: 0, margin: '5px', zIndex: 2}} id="RouterNavLink">
@@ -171,6 +181,10 @@ export default function ExchangeView () {
           <Box className='flex-al' mb="xs">
             <IconUsers style={{ width: '14px', height: '14px' }} stroke={1.0}/> 
             <Text ml="xs" mr="xl" size="sm" c="dimmed">{exchange.participantIds.length} / {exchange.capacity}</Text>
+          </Box>
+          <Box className='flex-al' mb="xs">
+            <IconUser style={{ width: '14px', height: '14px' }} stroke={1.0}/> 
+            <Text ml="xs" mr="xl" size="sm" c="dimmed">{exchange.organizerUnfolded.username}</Text>
           </Box>
       </div>
       <div style={{width: '40%'}}>
@@ -222,14 +236,14 @@ export default function ExchangeView () {
             </div>
         </div>            
     </div>
-    {!amValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
-      Your Languages dont match this Exchange
+    {!iAmValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
+      {notValidReason}
     </Button> }
-    {amValidToJoin && haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
+    {iAmValidToJoin && haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
       Remove myself
     </Button> }
 
-    {amValidToJoin && !haveJoined && 
+    {iAmValidToJoin && !haveJoined && 
     <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={ () => handleAddParticipant() } loading={isLoading}>
       Join
     </Button> }

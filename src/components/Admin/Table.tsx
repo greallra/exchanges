@@ -10,8 +10,9 @@ import { Table, Button, Select } from '@mantine/core';
 import { IconPhoto, IconTrash, IconArrowRight } from '@tabler/icons-react';
 
 // Utils
-import { formatUsersData, esDeleteDoc } from 'exchanges-shared'
+import { formatUsersData, esDeleteDoc, esGetCollection } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
+
 
 export default function adminTable() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +24,7 @@ export default function adminTable() {
     const { languages } = useLanguages();
     // const { user } = useAuth()
 
+  
     if (!param) {
       window.location.href = window.location.href + '?data=users'
     }

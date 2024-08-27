@@ -1,12 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from '@mantine/core';
-import Counter from '@/features/counter/Counter'
 import { notifications } from '@mantine/notifications';
 import { esDeleteDoc } from 'exchanges-shared'
 import { auth, db as FIREBASE_DB } from '@/firebaseConfig'
+import { useStore } from '@/store/store'
 
 export default function Settings() {
   const {user} = useAuth()
+  const count = useStore((state) => state.count)
+  const inc = useStore((state) => state.inc)
 
   function handleDeleteUser() {
     const userFB = auth.currentUser; 
@@ -27,7 +29,11 @@ export default function Settings() {
   return (
     <>
     settings
-    <Counter />
+    <div className="flex">
+      <div> {count}</div>
+      <button onClick={inc}>Inc</button>
+    </div>
+   
     <Button onClick={handleDeleteUser}>Delete My Account</Button>
     </>
   );

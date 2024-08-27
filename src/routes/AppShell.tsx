@@ -9,5 +9,5 @@ const appShellCss = {
 
 
 export default function AppShell(props) {
-    return (<div style={appShellCss}>{props.children}</div>)
+    return (<div style={appShellCss} className="app-shell">{props.children}</div>)
 }

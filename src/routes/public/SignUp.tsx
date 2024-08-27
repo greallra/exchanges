@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
-import { useSelector, useDispatch } from 'react-redux'
-import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useStore } from '@/store/store'
 
 import { notifications } from '@mantine/notifications';
 import { getFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
@@ -21,18 +20,20 @@ const SignUp = ():React.JSX.Element => {
     const { languages } = useLanguages();
     const { login } = useAuth();
 
-    const dispatch = useDispatch()
+    const isLoading = useStore((state) => state.loading)
+    const setLoading = useStore((state) => state.setLoading)
+    const stopLoading = useStore((state) => state.stopLoading)
 
     async function handleSubmit(e, stateOfChild) {
         e.preventDefault()
         setError('');
-        dispatch(setLoading())
+        setLoading()
         try {
             const formattedData = formatPostDataUser(stateOfChild)
             const validationResponse = await validateForm('newUser', formattedData)
             if (typeof validationResponse === 'string') {
                 notifications.show({ color: 'red', title: 'Error', message: 'Errors in form', })
-                dispatch(cancelLoading())
+                stopLoading()
                 setError(validationResponse);
                 setFormValid(false);
                 return
@@ -43,9 +44,9 @@ const SignUp = ():React.JSX.Element => {
             await esAddUser (FIREBASE_DB, userCredential, 'users', formattedData)
             notifications.show({ color: 'green', title: 'Success', message: 'User created', })
             login({id: userCredential.user.uid, uid: userCredential.user.uid, ...userCredential.user, ...formattedData})
-            dispatch(cancelLoading())
+            stopLoading()
           } catch (error) {
-            dispatch(cancelLoading())
+            stopLoading()
             console.log(error, typeof error, error.message);
             setError(error.message)
             notifications.show({ color: 'red', title: 'Error', message: 'Error creating user', })
@@ -105,6 +106,7 @@ const SignUp = ():React.JSX.Element => {
             validateForm={handleValidateForm} 
             error={error} 
             formValid={formValid}
+            loading={isLoading}
         />}
 
     </div>

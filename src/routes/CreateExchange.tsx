@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import useLanguages from '@/hooks/useLanguages';
-import { useSelector, useDispatch } from 'react-redux'
-import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useStore } from '@/store/store'
 
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
@@ -21,11 +20,13 @@ export default function CreateExchange (props) {
   const { user } = useAuth()
   const { languages } = useLanguages();
 
-  const dispatch = useDispatch()
+  const loading = useStore((state) => state.loading)
+  const setLoading = useStore((state) => state.setLoading)
+  const stopLoading = useStore((state) => state.stopLoading)
 
   async function handleSubmit(e:any, stateOfChild: object) {
     try {
-        dispatch(setLoading())
+        setLoading()
         e.preventDefault()
 
         const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
@@ -33,34 +34,23 @@ export default function CreateExchange (props) {
         const validationResponse = await validateForm('newExchange', formFormatted)
         if (typeof validationResponse === 'string') {
           notifications.show({ color: 'red', title: 'Error', message: 'Erors in form', })
-          dispatch(cancelLoading())
+          stopLoading()
           setError(validationResponse);
           setFormValid(false);
           return
         }
         const colRef = await esAddDoc(FIREBASE_DB, 'exchanges', validationResponse)
-        dispatch(cancelLoading())
+        stopLoading()
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', });
         navigate('/exchanges');
       } catch (error) {
-        dispatch(cancelLoading())
+        stopLoading()
         console.log(error);
         notifications.show({ color: 'red', title: 'Error', message: 'Error creating Exchange', })
       }
   }
     async function handleValidateForm(form) { 
-      // const validationResponse = await validateFormInlineClient('newExchange', form)
-      // setError('');
-      // setFormValid(true);
-      // if (typeof validationResponse === 'string') {
-      //     setError(validationResponse);
-      //     setFormValid(false);
-      //     return
-      // }
-      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // // success so make post api call possible
-      // setError('');
-      // setFormValid(true);
+
     }
 
     useEffect(() => {
@@ -78,7 +68,8 @@ export default function CreateExchange (props) {
     }, [languages])
 
     return (<div className='flex-col'>
-            <h2>Create an Exchange</h2>
+            <h2 className="text-blue-500">Create an Exchange</h2>
+            <button className="btn btn-secondary">Secondary</button>
               {!busy && 
                 <Form 
                     fields={fields}
@@ -87,6 +78,7 @@ export default function CreateExchange (props) {
                     validateForm={handleValidateForm} 
                     error={error} 
                     formValid={formValid}
+                    loading={loading}
                 />
               }
               <Space h="xl" />

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import Nav from '@/components/Nav'
 import '@/App.css'
@@ -21,6 +20,7 @@ import Exchanges from '@/routes/Exchanges'
 import ExchangeView from '@/routes/ExchangeView'
 import ExchangeEdit from '@/routes/ExchangeEdit'
 import Settings from '@/routes/Settings'
+import ProfileView from '@/routes/ProfileView'
 // ADMIN
 import Admin from '@/routes/admin/Index'
 // Other
@@ -40,6 +40,13 @@ const theme = createTheme({
     xl: '2rem',
   },
 });
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 import { Notifications } from '@mantine/notifications';
 // react libraries: https://www.robinwieruch.de/react-libraries/
@@ -49,12 +56,14 @@ import {
 } from "react-router-dom";
 console.log('baseUrl',  import.meta.env.BASE_URL);
 
+const queryClient = new QueryClient()
+
 //https://blog.logrocket.com/handling-user-authentication-redux-toolkit/
 function App() {
-  const loading = useSelector((state) => state.loading.value)
+  const loading = false
   return (
     <MantineProvider theme={theme}>
-         {/* <FirebaseProvider> */}
+        <QueryClientProvider client={queryClient}>
           <Notifications position="top-right"/>
           <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2, fixed: true }}/>
          
@@ -90,6 +99,10 @@ function App() {
                   element={<ProtectedRoute><Nav /><AppShell><Profile /></AppShell></ProtectedRoute>}
                 />
                 <Route
+                  path="/profile/:userId"
+                  element={<ProtectedRoute><Nav /><AppShell><ProfileView /></AppShell></ProtectedRoute>}
+                />
+                <Route
                   path="/settings"
                   element={<ProtectedRoute><Nav /><Settings /></ProtectedRoute>}
                 />
@@ -101,7 +114,7 @@ function App() {
               </Routes>
             </AuthProvider>
           </BrowserRouter>
-        {/* </FirebaseProvider> */}
+        </QueryClientProvider>
     </MantineProvider>
   )
 }

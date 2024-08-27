@@ -8,8 +8,7 @@ import {  getFormFields, formatPostDataExchange, esGetDoc, updateFormFieldsWithD
   updateFormFieldsWithSavedData, esUpdateDoc, esDeleteDoc, validateForm } from 'exchanges-shared'
 // import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
-// import { updateOneDoc, getOneDoc, deleteOneDoc } from '@/services/apiCalls'
-// import { validateForm } from '@/services/formValidation'
+import { useStore } from '@/store/store'
 import { useAuth } from "@/hooks/useAuth";
 import Form from '@/components/Forms/Form'
 
@@ -22,19 +21,24 @@ export default function ExchangeEdit (props) {
   const { user } = useAuth()
   const { languages } = useLanguages();
   let params = useParams();
+  const loading = useStore((state) => state.loading)
+  const setLoading = useStore((state) => state.setLoading)
+  const stopLoading = useStore((state) => state.stopLoading)
     
   async function handleSubmit(e:any, stateOfChild: object) {
     e.preventDefault()
+    setLoading()
     try {
         const data = formatPostDataExchange({...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid], id: params.exchangeId })
 
         const validationResponse = await validateForm('editExchange', data)
         const colRef = await esUpdateDoc(FIREBASE_DB, 'exchanges', params.exchangeId, data)
-        console.log('colRef', colRef);
+        stopLoading()
         notifications.show({ color: 'green', title: 'Success', message: 'Exchange updated', })
         navigate('/exchanges')
       } catch (error) {
         console.log(error);
+        stopLoading()
         notifications.show({ color: 'red', title: 'Error', message: 'Error updating Exchange', })
       }
   }
@@ -87,6 +91,7 @@ export default function ExchangeEdit (props) {
                   validateForm={handleValidateForm} 
                   error={error} 
                   formValid={formValid}
+                  loading={loading}
               />}
               <Button onClick={deleteDoc}>Delete</Button>
               <Space h="xl" />

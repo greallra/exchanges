@@ -30,8 +30,8 @@ export default function () {
                         <Avatar color="cyan" radius="xl" size={30}>{getUserInitials(user)}</Avatar>
                     </Tooltip>
                     <span style={{margin: '0 5px'}}>Profile </span>
-                    {user && <UserFlag src={user.teachingLanguageUnfoled && user.teachingLanguageUnfoled.smallFlag}/>}
-                    {user && <UserFlag src={user.learningLanguageUnfoled && user.learningLanguageUnfoled.smallFlag}/>}
+                    {user && <UserFlag src={user.teachingLanguageUnfolded && user.teachingLanguageUnfolded.smallFlag}/>}
+                    {user && <UserFlag src={user.learningLanguageUnfolded && user.learningLanguageUnfolded.smallFlag}/>}
                 </Button>
                 <Button onClick={() => navigate('/settings')} variant={ useLocation().pathname === '/settings' ? "filled" : "default"}>Settings</Button>
             </Button.Group>}

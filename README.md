@@ -29,34 +29,32 @@ export default {
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
+# To Do This week
+- refactor code a bit
+- add all the new stuff (react query, fix routing page, test code etc...)
+- Move onto RN
+
 # Manual Deploy for now
 - npm run build
 - drop dist foler into netlify
 
-# To Do
-- Auth System with React Vite setup any see what extra fields i need vs what i get from firebase / google signup
-- Add age restriction and sex feature
-- Then try Auth System with React Native Expo 
-- start building out mobile / next app
+# To Do Decided
+- Integrate tailwind (DONE)
+- Decide on Mantine v Daisy UI v Shadowcn v Radix v Daisy UI
+- Integrate React Query + Zustand: Test with component only, then test with zustand (https://www.youtube.com/watch?v=QTZTUrAbjeo&t=131s)
+- Typescript everything, create all the types etc in shared folder
+- Testing: Cypress and React Testing Library seem to be the main 2, see how to structure 
+- fix folder structure to make more sense
 
 # Next Js ?? (React Vite or Next JS)
 - Deploying: if im using any server side comps, would need a Manage server(Vercel, Netlify, Firebase) or Self Servers (AWS, digital ocean)
 - Functionality: Next Pro's are SEO, i dont plan on doing this
 
 # React Vite ?? (React Vite or Next JS)
-- Not really for client side this project, just to get a working prototype, main app will be mobile 
-
-# To Do Auth
-- Auth System with next and hook it up to exchanges db, see how works
-- 
-- Add age range + sex picker to exchange creation (after auth though as we will get this info)
-- 
+- React as next is trickier to deploy
 
 # To Do not urgent
-- Stop using ml-1 and use style props!
-- Integrate Cypress - done
-- Redux use with next db collection
-- Maybe move to Next JS? (if need to use other server in future, would be an easier transition, good tech to know for other jobs) 
+
 
 # To Do Bugs
 
@@ -66,3 +64,61 @@ export default {
 - Rating System
 - Chat 
 - Internationalize
+
+
+Daisy UI Pros and Cons
+Pros
+-Nice looking components
+Cons
+Bad Accessibility
+need a specific react package to integrate into react
+
+# Testing
+https://kentcdodds.com/blog/static-vs-unit-vs-integration-vs-e2e-tests
+
+
+# To Research
+React query + zustand
+issue of server data v frontend data format
+type v interface
+folder structure
+Case for headless UI libraries: https://medium.com/@nirbenyair/headless-components-in-react-and-why-i-stopped-using-ui-libraries-a8208197c268
+Forms and error handling
+
+# React architechture
+STYLING - Tailwind with ? + ?
+GLOBAL STATE - Context + (Zustand - MAYBE I WILL TRY IT / React query - YES)
+TESTING - Cypress or React Testing Library or both
+FORMS - ?
+
+# React Folder Structure
+└── src/
+    ├── assets/ (# assets folder can contain all the static files such as images, fonts, etc.)
+    ├── api/ (api calls)
+    |-- types
+    ├── configs/ (# global configurations, exported env variables etc.)
+    ├── components/
+    │   ├── auth/
+    │   │   └── SignUpForm.tsx
+    │   ├── payment/
+    │   │   └── PaymentForm.tsx
+    │   ├── common/
+    │   │   └── Button.tsx
+    │   └── employees/
+    │       ├── EmployeeList.tsx
+    │       └── EmployeeSummary.tsx
+    ├── hooks/
+    │   ├── auth/
+    │   │   └── useAuth.ts
+    │   ├── payment/
+    │   │   └── usePayment.ts
+    │   └── employees/
+    │       ├── useEmployees.ts
+    │       └── useUpdateEmployee.ts
+    ├── lib/
+    ├── services/
+    ├── states/
+    └── utils/
+
+
+Zustand / React Query (TO CONSIDER)

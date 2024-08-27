@@ -9,6 +9,7 @@ interface FormProps {
     validateForm: <T>(data: T) => void,
     error: string,
     formValid: boolean,
+    loading: boolean,
     user: object
 }
 
@@ -40,7 +41,7 @@ const Form = (p: FormProps) => {
         <Space h="md" />
         {p.error &&  <Alert variant="light" color="red" title="You have errors" icon={<IconInfoCircle />}>{p.error}</Alert>}
         <Space h="md" />
-        <Button variant="filled" type='submit'>Submit</Button>
+        <Button variant="filled" type='submit' loading={p.loading}>Submit</Button>
     
     </form>
 }

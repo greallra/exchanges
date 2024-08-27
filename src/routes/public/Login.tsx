@@ -1,6 +1,4 @@
-// import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux'
-import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useStore } from '@/store/store'
 
 import { Button, Input, Text, Space } from '@mantine/core';
 import { useState, useEffect } from 'react';
@@ -15,24 +13,27 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const dispatch = useDispatch()
+    const loading = useStore((state) => state.loading)
+    const setLoading = useStore((state) => state.setLoading)
+    const stopLoading = useStore((state) => state.stopLoading)
+
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setEmail(e.target.value);
     }
 
     const handleLogin = () => {
-        dispatch(setLoading())
+        setLoading()
         setError(false);
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             // Signed in - Listener in Auth Hook will handle setting user and navigate to app
-            dispatch(cancelLoading())  
+            stopLoading()
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            dispatch(cancelLoading())
+            stopLoading()
             setError(errorMessage);
         });
     }
@@ -43,7 +44,7 @@ export default function Login() {
     <Input placeholder="" value={email} onChange={handleEmailChange}/>
     <h4>Password</h4>
     <Input placeholder="" value={password} onChange={(e) => setPassword(e.target.value)}/>
-    <Button  disabled={false} variant="filled" size="xl" style={{marginTop: '40px'}} onClick={handleLogin}>Login</Button>
+    <Button loading={loading} disabled={false} variant="filled" size="xl" style={{marginTop: '40px'}} onClick={handleLogin}>Login</Button>
     <Space h="xl" />
     <Alert text={error} show={error}/>
     <Space h="xl" />
