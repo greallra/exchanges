@@ -1,15 +1,13 @@
 
-import { Card, Image, Text, Box, Button, Group, LoadingOverlay } from '@mantine/core';
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
-import { useStore } from '@/store/store'
 import { useParams, Link } from 'react-router-dom';
+
+import { useStore } from '@/store/store'
 import { useAuth } from "@/hooks/useAuth";
-import { checkUserIsValidToJoin, formatExchange, esGetDoc, esUpdateDoc, removeMyselfFromExchange, checkUserHasJoined, getPartipantsOfLanguages, addParticipantToExchange } from 'exchanges-shared'
+import useFetchOne from '@/hooks/useFetchOne';
+import { checkUserIsValidToJoin, formatExchange, esGetDoc, esUpdateDoc, removeMyselfFromExchange, 
+  checkUserHasJoined, getPartipantsOfLanguages, addParticipantToExchange, userLanguagesMatchesExchange } from 'exchanges-shared'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
-import {
-  useQuery,
-} from '@tanstack/react-query'
 // C
 import UserFlag from '@/components/UserFlag'
 import { IconUsers, IconUser, IconArrowLeft, IconMapPin, IconClock, IconPencil, IconUserCheck, 
@@ -20,10 +18,13 @@ import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import MapPosition from '@/components/Maps/MapPosition'
 import AddFriendsPopover from '@/components/AddFriendsPopover'
+import { Card, Image, Text, Box, Button, Group, LoadingOverlay } from '@mantine/core';
 
 
 export default function ExchangeView () {
     const [exchange, setExchange] = React.useState(null);
+    const [amValidToJoin, setAmValidToJoin] = React.useState(false);
+    const [haveJoined, setHaveJoined] = React.useState(false);
     const [notValidReason, setNotValidReason] = React.useState('');
     const { languages } = useLanguages();
     const { data: users } = useFetch('users')
@@ -31,19 +32,16 @@ export default function ExchangeView () {
     const [participantsLearningLanguage, setParticipantsLearningLanguage] = React.useState([])
     const {user: me} = useAuth()
     let params = useParams();
+    const { data: exchangeListener } = useFetchOne('exchanges', params.exchangeId)
 
 
     const isLoading = useStore((state) => state.loading)
     const setLoading = useStore((state) => state.setLoading)
     const stopLoading = useStore((state) => state.stopLoading)
 
-    let iAmValidToJoin = false
-    let haveJoined = false
-
     async function handleAddParticipant(user = null) {
       setLoading()
       const { isValid, message, joiningUser } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me, user)
-      console.log('isValid, message', isValid, message);
       
       if (!isValid) {
         stopLoading()
@@ -79,11 +77,9 @@ export default function ExchangeView () {
     async function fetchData(id:string) {  
       try {
         const { docSnap } = await esGetDoc(FIREBASE_DB, "exchanges", id);
-
-        console.log(223, languages, users);
-        
         const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages, users)
-
+        console.log('fetch, formattedExchange', formattedExchange);
+        
         setExchange(formattedExchange)
       } catch (error) {
         notifications.show({ color: 'red', title: 'Error', message: 'Error gettting exchange', })
@@ -97,34 +93,35 @@ export default function ExchangeView () {
     }, [languages, users]); 
 
     React.useEffect(() => {
+   
+      if (exchangeListener && languages.length > 0 && users.length > 0) {
+        const formattedExchange = formatExchange({...exchangeListener, id: exchangeListener.id}, languages, users)
+        setExchange(formattedExchange)
+      }
+  
+    }, [exchangeListener, params.exchangeId, languages]); 
+
+    React.useEffect(() => {
       if (exchange && users.length > 0) {
         const { participantsTeachingLanguage, participantsLearningLanguage } = getPartipantsOfLanguages(users, exchange)
         setParticipantsTeachingLanguage(participantsTeachingLanguage);
         setParticipantsLearningLanguage(participantsLearningLanguage);
       }
-      if (exchange && me && participantsTeachingLanguage && participantsLearningLanguage) {
-        const { isValid, message } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me);
-        console.log('message', message);
-        setNotValidReason(message)
-        
-        iAmValidToJoin = isValid
-        haveJoined = checkUserHasJoined(me, exchange);
-      }
-
     }, [exchange, users])
 
     React.useEffect(() => {
       if (exchange && me && participantsTeachingLanguage && participantsLearningLanguage) {
         const { isValid, message } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me);
-        console.log('isValid', isValid);
-        console.log('message', message);
-        setNotValidReason(message)
         
-        iAmValidToJoin = isValid
-        haveJoined = checkUserHasJoined(me, exchange);
+        setAmValidToJoin(isValid)
+        console.log('checkUserHasJoined(me, exchange)', checkUserHasJoined(me, exchange));
+        
+        setHaveJoined(checkUserHasJoined(me, exchange));
+        setNotValidReason(message)
+        console.log('isValid, message, joined', isValid, message, checkUserHasJoined(me, exchange));
+        
       }
-
-    }, [exchange, me, participantsTeachingLanguage, participantsLearningLanguage])
+    }, [participantsTeachingLanguage, participantsLearningLanguage])
 
     const participantsList = (participants, teachingLanguage) => {
       const divContainer = [];
@@ -133,14 +130,11 @@ export default function ExchangeView () {
           key={i} 
           user={participants[i]} 
           exchange={exchange} 
-          amValidToJoin={iAmValidToJoin}
+          amValidToJoin={amValidToJoin}
           teachingLanguage={teachingLanguage} />)
       }
       return <div>{divContainer}</div>;
     }
-
-   console.log('iAmValidToJoin', iAmValidToJoin);
-   console.log('haveJoined', haveJoined);
 
   return exchange ? (
   <Card shadow="sm" padding="lg" radius="md" withBorder style={{maxWidth: '600px', margin: 'auto'}}>
@@ -236,14 +230,14 @@ export default function ExchangeView () {
             </div>
         </div>            
     </div>
-    {!iAmValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
+    {!amValidToJoin && !haveJoined && <Button color="red" fullWidth mt="md" radius="md" disabled>
       {notValidReason}
     </Button> }
-    {iAmValidToJoin && haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
+    {haveJoined && <Button color="red" fullWidth mt="md" radius="md" onClick={handleRemoveMyself}>
       Remove myself
     </Button> }
 
-    {iAmValidToJoin && !haveJoined && 
+    {amValidToJoin && !haveJoined && 
     <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onClick={ () => handleAddParticipant() } loading={isLoading}>
       Join
     </Button> }

@@ -73,6 +73,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             placeholder={p.placeholder}
             onChange={handleDirectChange}
             error={p.error}
+            disabled={p.disabled}
             value={p.value}
             data={p.availableValues}
             max={p.max || null}

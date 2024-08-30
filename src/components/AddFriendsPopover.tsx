@@ -41,11 +41,8 @@ export default function AddFriendsPopover({ handleAddParticipant, exchange }) {
 
     }
   }
-  console.log('formattedFetchedUsers', formattedFetchedUsers);
-  console.log('usersData', usersData);
 
   function handleChange(value: string) {
-    console.log('value', value);
     const userObject = fetchedUsers.find( user => user.username === value)
     setSelected(userObject)
   }
@@ -80,7 +77,6 @@ export default function AddFriendsPopover({ handleAddParticipant, exchange }) {
 
   const icon = <IconUsersPlus style={{ width: rem(16), height: rem(16) }} />;
   const data = getData()
-  console.log('data', data);
   
   return (
     <Popover width={400} position="top" withArrow shadow="md" closeOnClickOutside={false}>

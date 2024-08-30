@@ -1,4 +1,10 @@
-use cypress for:
-1. component test
-2. integration test
-3. and e2e test
+Unit testing (preferably with testing-library)
+E2E testing (preferably with Cypress)
+
+
+Testing: Users
+Login > change my profile details
+Signup > change my profile details
+
+Testing: Exchange
+Create Exchange > Edit Exchange > View Exchange > View exchange actions

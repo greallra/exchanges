@@ -1,12 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import useLanguages from '@/hooks/useLanguages';
 import { notifications } from '@mantine/notifications';
 import { Button, Input, Text, Space } from '@mantine/core';
-// import { exchangeFormFields } from '@/common/formsFields'
 import {  getFormFields, formatPostDataExchange, esGetDoc, updateFormFieldsWithDefaultData, 
   updateFormFieldsWithSavedData, esUpdateDoc, esDeleteDoc, validateForm } from 'exchanges-shared'
-// import { formatPostData, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData } from '@/common/formHelpers'
 import { db as FIREBASE_DB } from "@/firebaseConfig";
 import { useStore } from '@/store/store'
 import { useAuth } from "@/hooks/useAuth";
@@ -73,7 +71,8 @@ export default function ExchangeEdit (props) {
                 learningLanguage: languages.find( lang => lang.id === user.learningLanguageId),
             }
    
-            const updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
+            let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData})
+            updatedFields = updatedFields.map( field => !['capacity'].includes(field.property) ? field : {...field, disabled: true} )
             setFields(updatedFields);
             setBusy(false)
           })
